@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"io.redspace.ironsspellbooks.IronsSpellbooksClient"
+		],
+		"fabric-datagen": [
+			"io.redspace.ironsspellbooks.FabricDatagenEntrypoint"
 		]
 	},
 	"mixins": [

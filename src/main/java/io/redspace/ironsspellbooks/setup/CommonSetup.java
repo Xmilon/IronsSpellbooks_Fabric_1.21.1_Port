@@ -1,6 +1,7 @@
 package io.redspace.ironsspellbooks.setup;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
@@ -32,16 +33,20 @@ import io.redspace.ironsspellbooks.entity.spells.void_tentacle.VoidTentacle;
 import io.redspace.ironsspellbooks.entity.spells.wisp.WispEntity;
 import io.redspace.ironsspellbooks.registries.BlockRegistry;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
+import io.redspace.ironsspellbooks.registries.FeatureRegistry;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.animal.PolarBear;
 import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
@@ -54,6 +59,8 @@ import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 @EventBusSubscriber(modid = IronsSpellbooks.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
     public static void bootstrapFabric() {
+        registerPlayerAttributesFabricFallback();
+
         FabricDefaultAttributeRegistry.register(EntityRegistry.DEBUG_WIZARD.get(), DebugWizard.prepareAttributes());
         FabricDefaultAttributeRegistry.register(EntityRegistry.PYROMANCER.get(), PyromancerEntity.prepareAttributes());
         FabricDefaultAttributeRegistry.register(EntityRegistry.NECROMANCER.get(), NecromancerEntity.prepareAttributes());
@@ -101,6 +108,49 @@ public class CommonSetup {
                 1,
                 1
         );
+
+        BiomeModifications.addFeature(
+                BiomeSelectors.foundInOverworld(),
+                GenerationStep.Decoration.UNDERGROUND_ORES,
+                FeatureRegistry.MITHRIL_ORE_PLACEMENT
+        );
+    }
+
+    private static void registerPlayerAttributesFabricFallback() {
+        // PlayerMixin should already inject these into Player#createAttributes. This fallback keeps Fabric builds
+        // resilient in case that mixin fails to apply for any reason.
+        AttributeSupplier.Builder playerAttributes = Player.createAttributes()
+                .add(AttributeRegistry.MAX_MANA)
+                .add(AttributeRegistry.MANA_REGEN)
+                .add(AttributeRegistry.COOLDOWN_REDUCTION)
+                .add(AttributeRegistry.SPELL_POWER)
+                .add(AttributeRegistry.SPELL_RESIST)
+                .add(AttributeRegistry.CAST_TIME_REDUCTION)
+                .add(AttributeRegistry.SUMMON_DAMAGE)
+                .add(AttributeRegistry.CASTING_MOVESPEED)
+                .add(AttributeRegistry.FIRE_MAGIC_RESIST)
+                .add(AttributeRegistry.ICE_MAGIC_RESIST)
+                .add(AttributeRegistry.LIGHTNING_MAGIC_RESIST)
+                .add(AttributeRegistry.HOLY_MAGIC_RESIST)
+                .add(AttributeRegistry.ENDER_MAGIC_RESIST)
+                .add(AttributeRegistry.BLOOD_MAGIC_RESIST)
+                .add(AttributeRegistry.EVOCATION_MAGIC_RESIST)
+                .add(AttributeRegistry.NATURE_MAGIC_RESIST)
+                .add(AttributeRegistry.ELDRITCH_MAGIC_RESIST)
+                .add(AttributeRegistry.FIRE_SPELL_POWER)
+                .add(AttributeRegistry.ICE_SPELL_POWER)
+                .add(AttributeRegistry.LIGHTNING_SPELL_POWER)
+                .add(AttributeRegistry.HOLY_SPELL_POWER)
+                .add(AttributeRegistry.ENDER_SPELL_POWER)
+                .add(AttributeRegistry.BLOOD_SPELL_POWER)
+                .add(AttributeRegistry.EVOCATION_SPELL_POWER)
+                .add(AttributeRegistry.NATURE_SPELL_POWER)
+                .add(AttributeRegistry.ELDRITCH_SPELL_POWER);
+        try {
+            FabricDefaultAttributeRegistry.register(net.minecraft.world.entity.EntityType.PLAYER, playerAttributes);
+        } catch (IllegalStateException ignored) {
+            // Already registered by another path (for example successful PlayerMixin injection).
+        }
     }
 
     @SubscribeEvent

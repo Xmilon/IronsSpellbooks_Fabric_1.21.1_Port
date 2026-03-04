@@ -21,6 +21,7 @@ import io.redspace.ironsspellbooks.render.animation.AnimationHelper;
 import io.redspace.ironsspellbooks.setup.ClientMessages;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -38,6 +39,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -62,6 +64,7 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         registerEntityRenderers();
         registerFallbackEntityRenderers();
         registerBlockEntityRenderers();
+        registerBlockRenderLayers();
         registerParticleFactories();
         MenuScreens.register(MenuRegistry.INSCRIPTION_TABLE_MENU.get(), InscriptionTableScreen::new);
         MenuScreens.register(MenuRegistry.SCROLL_FORGE_MENU.get(), ScrollForgeScreen::new);
@@ -234,6 +237,13 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         BlockEntityRendererRegistry.register(BlockRegistry.PEDESTAL_TILE.get(), io.redspace.ironsspellbooks.block.pedestal.PedestalRenderer::new);
         BlockEntityRendererRegistry.register(BlockRegistry.ALCHEMIST_CAULDRON_TILE.get(), io.redspace.ironsspellbooks.block.alchemist_cauldron.AlchemistCauldronRenderer::new);
         BlockEntityRendererRegistry.register(BlockRegistry.PORTAL_FRAME_BLOCK_ENTITY.get(), io.redspace.ironsspellbooks.block.portal_frame.PortalFrameRenderer::new);
+    }
+
+    private static void registerBlockRenderLayers() {
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(),
+                BlockRegistry.INSCRIPTION_TABLE_BLOCK.get(),
+                BlockRegistry.PORTAL_FRAME.get(),
+                BlockRegistry.POCKET_PORTAL_FRAME.get());
     }
 
     private static void registerParticleFactories() {

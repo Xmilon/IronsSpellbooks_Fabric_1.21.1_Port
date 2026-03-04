@@ -13,6 +13,7 @@ import io.redspace.ironsspellbooks.entity.mobs.wizards.IMerchantWizard;
 import io.redspace.ironsspellbooks.item.FurledMapItem;
 import io.redspace.ironsspellbooks.player.AdditionalWanderingTrades;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
+import io.redspace.ironsspellbooks.registries.SoundRegistry;
 import io.redspace.ironsspellbooks.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -277,7 +278,7 @@ public class PriestEntity extends NeutralWizard implements VillagerDataHolder, S
 
     public void setUnhappy() {
         if (!level().isClientSide) {
-            this.playSound(SoundEvents.VILLAGER_NO, this.getSoundVolume(), this.getVoicePitch());
+            this.playSound(SoundRegistry.TRADER_NO.get(), this.getSoundVolume(), this.getVoicePitch());
             unhappyTimer = 20;
             this.entityData.set(DATA_VILLAGER_UNHAPPY, true);
         }
@@ -299,7 +300,7 @@ public class PriestEntity extends NeutralWizard implements VillagerDataHolder, S
 
     @Override
     public Optional<SoundEvent> getAngerSound() {
-        return Optional.of(SoundEvents.VILLAGER_NO);
+        return Optional.of(SoundRegistry.TRADER_NO.get());
     }
 
     /*
@@ -403,11 +404,11 @@ public class PriestEntity extends NeutralWizard implements VillagerDataHolder, S
 
     @Override
     public SoundEvent getNotifyTradeSound() {
-        return SoundEvents.VILLAGER_YES;
+        return SoundRegistry.TRADER_YES.get();
     }
 
     protected SoundEvent getTradeUpdatedSound(boolean pIsYesSound) {
-        return pIsYesSound ? SoundEvents.VILLAGER_YES : SoundEvents.VILLAGER_NO;
+        return pIsYesSound ? SoundRegistry.TRADER_YES.get() : SoundRegistry.TRADER_NO.get();
     }
 
     private void startTrading(Player pPlayer) {
@@ -447,7 +448,7 @@ public class PriestEntity extends NeutralWizard implements VillagerDataHolder, S
 
     @Override
     public Level level() {
-        return this.level();
+        return super.level();
     }
 
     static class BibleTrade extends AdditionalWanderingTrades.SimpleTrade {

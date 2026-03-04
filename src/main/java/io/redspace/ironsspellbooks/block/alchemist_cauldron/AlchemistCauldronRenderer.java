@@ -50,7 +50,7 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
 
     @Override
     public void render(AlchemistCauldronTile cauldron, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        int waterLevel = Mth.clamp(cauldron.getFluidAmount(), 0, 1000);
+        int waterLevel = cauldron.getFluidAmount();
 
         float waterOffset = Mth.lerp(waterLevel / 1000f, .25f, .9f);
 
@@ -122,18 +122,6 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
         float runningFluid = totalFluid;
         float f = 0;
         float padding = 1 / 16f;
-        if (cauldron.fluidInventory.fluids().isEmpty()) {
-            VertexConsumer consumer = bufferSource.getBuffer(RenderType.translucent());
-            float r = 0.20f;
-            float g = 0.46f;
-            float b = 0.95f;
-            float opacity = 0.8f;
-            consumer.addVertex(pose, 1 - padding, waterOffset, 0 + padding).setColor(r, g, b, opacity).setUv(1 - padding, 0 + padding).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 0 + padding, waterOffset, 0 + padding).setColor(r, g, b, opacity).setUv(0 + padding, 0 + padding).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 0 + padding, waterOffset, 1 - padding).setColor(r, g, b, opacity).setUv(0 + padding, 1 - padding).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 1 - padding, waterOffset, 1 - padding).setColor(r, g, b, opacity).setUv(1 - padding, 1 - padding).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
-            return;
-        }
         for (FluidStack fluid : cauldron.fluidInventory.fluids()) {
             int skylight = packedLight >> 4 & 15;
             int luminosity = Math.max(skylight, fluid.getFluidType().getLightLevel(fluid));

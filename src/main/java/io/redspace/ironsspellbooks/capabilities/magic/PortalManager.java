@@ -40,7 +40,7 @@ public class PortalManager implements INBTSerializable<CompoundTag> {
 
     public void addPortalData(UUID portalEntityUUID, PortalData portalData) {
         portalLookup.put(portalEntityUUID, portalData);
-        IronsDataStorage.INSTANCE.setDirty();
+        markStorageDirty();
     }
 
     public void addPortalCooldown(Entity entity, UUID portalId) {
@@ -125,7 +125,7 @@ public class PortalManager implements INBTSerializable<CompoundTag> {
     public void removePortalData(UUID portalUUID) {
         portalLookup.remove(portalUUID);
         cooldownLookup.remove(portalUUID);
-        IronsDataStorage.INSTANCE.setDirty();
+        markStorageDirty();
     }
 
     public void killPortal(UUID portalUUID, UUID ownerUUID) {
@@ -154,7 +154,13 @@ public class PortalManager implements INBTSerializable<CompoundTag> {
         }
 
         cooldownLookup.remove(portalUUID);
-        IronsDataStorage.INSTANCE.setDirty();
+        markStorageDirty();
+    }
+
+    private static void markStorageDirty() {
+        if (IronsDataStorage.INSTANCE != null) {
+            IronsDataStorage.INSTANCE.setDirty();
+        }
     }
 
     private void tryCancelRecast(UUID portalUUID, UUID ownerUUID) {

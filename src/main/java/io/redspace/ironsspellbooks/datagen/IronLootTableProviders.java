@@ -32,8 +32,8 @@ public class IronLootTableProviders {
         @Override
         protected void generate() {
             //TODO: when adding table, make sure to add the block to known blocks (#add does it automatically)
-            this.add(BlockRegistry.MITHRIL_ORE.get(), p_249875_ -> this.createOreDrop(p_249875_, ItemRegistry.RAW_MITHRIL.get()));
-            this.add(BlockRegistry.MITHRIL_ORE_DEEPSLATE.get(), p_249875_ -> this.createOreDrop(p_249875_, ItemRegistry.RAW_MITHRIL.get()));
+            this.dropSelf(BlockRegistry.MITHRIL_ORE.get());
+            this.dropSelf(BlockRegistry.MITHRIL_ORE_DEEPSLATE.get());
             this.add(BlockRegistry.PORTAL_FRAME.get(), p_249875_ -> this.createSingleItemTable(ItemRegistry.PORTAL_FRAME_ITEM.get()));
             this.add(BlockRegistry.WISEWOOD_BOOKSHELF.get(), p_249875_ -> this.createSingleItemTable(ItemRegistry.WISEWOOD_BOOKSHELF_BLOCK_ITEM.get()));
             this.add(BlockRegistry.WISEWOOD_CHISELLED_BOOKSHELF.get(), p_249875_ -> this.createSingleItemTable(ItemRegistry.WISEWOOD_CHISELED_BOOKSHELF_BLOCK_ITEM.get()));

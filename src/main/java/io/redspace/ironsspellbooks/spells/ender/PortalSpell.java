@@ -136,12 +136,19 @@ public class PortalSpell extends AbstractSpell {
         float portalRotation = portalFrame.getBlockState().getValue(PortalFrameBlock.FACING).toYRot();
         if (recastInstance != null) {
             var portalData = (PortalData) recastInstance.getCastData();
-            if (portalData.globalPos1 != null & portalData.portalEntityId1 != null) {
+            if (portalData.globalPos1 != null && portalData.portalEntityId1 != null) {
                 portalData.globalPos2 = PortalPos.of(player.level().dimension(), portalLocation, portalRotation);
                 portalData.portalEntityId2 = portalFrame.getUUID();
                 PortalManager.INSTANCE.addPortalData(portalData.portalEntityId1, portalData);
                 PortalManager.INSTANCE.addPortalData(portalData.portalEntityId2, portalData);
                 portalFrame.setChanged();
+                var firstPortalLevel = player.getServer().getLevel(portalData.globalPos1.dimension());
+                if (firstPortalLevel != null) {
+                    var firstPortalPos = BlockPos.containing(portalData.globalPos1.pos());
+                    if (firstPortalLevel.isLoaded(firstPortalPos)) {
+                        firstPortalLevel.getBlockEntity(firstPortalPos, BlockRegistry.PORTAL_FRAME_BLOCK_ENTITY.get()).ifPresent(PortalFrameBlockEntity::setChanged);
+                    }
+                }
             }
         } else {
             var portalData = new PortalData();
@@ -161,7 +168,7 @@ public class PortalSpell extends AbstractSpell {
         if (recastInstance != null) {
             var portalData = (PortalData) recastInstance.getCastData();
 
-            if (portalData.globalPos1 != null & portalData.portalEntityId1 != null) {
+            if (portalData.globalPos1 != null && portalData.portalEntityId1 != null) {
                 portalData.globalPos2 = PortalPos.of(player.level().dimension(), portalLocation, portalRotation);
                 portalData.setPortalDuration(getPortalDuration(spellLevel, player));
                 PortalEntity secondPortalEntity = setupPortalEntity(serverLevel, portalData, player, portalLocation, portalRotation);

@@ -5,6 +5,7 @@ import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.api.config.SpellConfigManager;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.compat.CompatHandler;
+import io.redspace.ironsspellbooks.data.IronsDataStorage;
 import io.redspace.ironsspellbooks.effect.guiding_bolt.GuidingBoltManager;
 import io.redspace.ironsspellbooks.network.SyncManaPacket;
 import io.redspace.ironsspellbooks.worldgen.IceSpiderPatrolSpawner;
@@ -84,6 +85,7 @@ public class ModSetup {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             io.redspace.ironsspellbooks.IronsSpellbooks.MCS = server;
             io.redspace.ironsspellbooks.IronsSpellbooks.OVERWORLD = server.overworld();
+            IronsDataStorage.init(server.overworld().getDataStorage());
             SpellConfigManager.onDatapackSync(new OnDatapackSyncEvent(server.getPlayerList(), null));
         });
 

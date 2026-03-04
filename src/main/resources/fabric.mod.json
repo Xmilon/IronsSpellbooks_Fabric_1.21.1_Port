@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "irons_spellbooks",
+	"version": "${version}",
+	"name": "Iron's Spells 'n Spellbooks",
+	"description": "Magic combat, spells, spellbooks, bosses, and structures.",
+	"authors": [
+		"iron431"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/irons-spells-n-spellbooks",
+		"sources": "https://github.com/iron431/irons-spells-n-spellbooks"
+	},
+	"license": "All Rights Reserved",
+	"icon": "assets/ironsspellbooks/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.redspace.ironsspellbooks.IronsSpellbooks"
+		],
+		"client": [
+			"io.redspace.ironsspellbooks.IronsSpellbooksClient"
+		]
+	},
+	"mixins": [
+		"ironsspellbooks.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"geckolib": "*",
+		"playeranimator": "*"
+	}
+}

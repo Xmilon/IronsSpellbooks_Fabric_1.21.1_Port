@@ -1,0 +1,7 @@
+{
+    "parent":  "irons_spellbooks:item/template_spell_book_model",
+    "textures":  {
+                     "book":  "irons_spellbooks:item/spell_book_models/necronomicon_spell_book",
+                     "particle":  "irons_spellbooks:item/spell_book_models/necronomicon_spell_book"
+                 }
+}

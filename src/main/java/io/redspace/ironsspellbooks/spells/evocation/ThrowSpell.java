@@ -87,7 +87,7 @@ public class ThrowSpell extends AbstractSpell {
         ItemStack stack = playerMagicData.getCastingEquipmentSlot().equals(SpellSelectionManager.OFFHAND) ? entity.getOffhandItem() : entity.getMainHandItem();
         ThrownItemProjectile thrownItem = new ThrownItemProjectile(world, stack);
         thrownItem.setOwner(entity);
-        thrownItem.setPos(entity.position().add(0, entity.getEyeHeight() - thrownItem.getBoundingBox().getYsize() * .5f, 0));
+        thrownItem.setPos(Utils.getSpellCastStart(entity).add(0, -thrownItem.getBoundingBox().getYsize() * .35f, 0));
         thrownItem.shoot(entity.getLookAngle());
         thrownItem.setDamage(getDamage(spellLevel, entity));
         thrownItem.setScale(entity.getScale());

@@ -6,7 +6,7 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.gui.overlays.SpellSelection;
 import io.redspace.ironsspellbooks.network.gui.SelectSpellPacket;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
@@ -21,8 +21,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotResult;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,10 +66,6 @@ public class SpellSelectionManager {
         }
 
         initCurioItems(player);
-        initItem(player.getItemBySlot(EquipmentSlot.HEAD), EquipmentSlot.HEAD.getName());
-        initItem(player.getItemBySlot(EquipmentSlot.CHEST), EquipmentSlot.CHEST.getName());
-        initItem(player.getItemBySlot(EquipmentSlot.LEGS), EquipmentSlot.LEGS.getName());
-        initItem(player.getItemBySlot(EquipmentSlot.FEET), EquipmentSlot.FEET.getName());
         initItem(player.getItemBySlot(EquipmentSlot.MAINHAND), MAINHAND);
         initItem(player.getItemBySlot(EquipmentSlot.OFFHAND), OFFHAND);
         NeoForge.EVENT_BUS.post(new SpellSelectionEvent(this.player, this));
@@ -87,15 +83,15 @@ public class SpellSelectionManager {
     }
 
     private void initCurioItems(Player player) {
-        CuriosApi.getCuriosInventory(player).ifPresent(inv -> {
+        TrinketsApi.getTrinketsInventory(player).ifPresent(inv -> {
             ItemStack spellbook = Utils.getPlayerSpellbookStack(player);
             if (spellbook != null) {
-                initItem(spellbook, Curios.SPELLBOOK_SLOT);
+                initItem(spellbook, TrinketsSlots.SPELLBOOK_SLOT);
             }
-            inv.findCurios(ISpellContainer::isSpellContainer).stream()
-                    .filter(slot -> !slot.slotContext().identifier().equals(Curios.SPELLBOOK_SLOT))
-                    .sorted(Comparator.comparing((SlotResult s) -> s.slotContext().identifier()).thenComparingInt(s -> s.slotContext().index()))
-                    .forEach(slotResult -> initItem(slotResult.stack(), String.format("%s_%s", slotResult.slotContext().identifier(), slotResult.slotContext().index())));
+            inv.findTrinkets(ISpellContainer::isSpellContainer).stream()
+                    .filter(slot -> !slot.slotContext().identifier().equals(TrinketsSlots.SPELLBOOK_SLOT))
+                    .sorted(Comparator.comparing((TrinketSlotResult s) -> s.slotContext().identifier()).thenComparingInt(s -> s.slotContext().index()))
+                    .forEach(TrinketSlotResult -> initItem(TrinketSlotResult.stack(), String.format("%s_%s", TrinketSlotResult.slotContext().identifier(), TrinketSlotResult.slotContext().index())));
         });
 
     }
@@ -103,9 +99,9 @@ public class SpellSelectionManager {
     /**
      * Sorts curio initialization order to always put spellbooks first
      */
-    private int sortSpellbookSlot(SlotResult s1, SlotResult s2) {
-        if (s1.slotContext().identifier().equals(Curios.SPELLBOOK_SLOT)) return -1;
-        if (s2.slotContext().identifier().equals(Curios.SPELLBOOK_SLOT)) return 1;
+    private int sortSpellbookSlot(TrinketSlotResult s1, TrinketSlotResult s2) {
+        if (s1.slotContext().identifier().equals(TrinketsSlots.SPELLBOOK_SLOT)) return -1;
+        if (s2.slotContext().identifier().equals(TrinketsSlots.SPELLBOOK_SLOT)) return 1;
         return s1.slotContext().identifier().compareTo(s2.slotContext().identifier());
     }
 
@@ -302,8 +298,8 @@ public class SpellSelectionManager {
         }
 
         public CastSource getCastSource() {
-            //todo: this paradigm is unreliable, cast source should be explicitly stored on the selection option
-            return this.slot.startsWith(Curios.SPELLBOOK_SLOT) ? CastSource.SPELLBOOK : CastSource.SWORD;
+            // Hand-held imbued items cast as sword source; all other containers cast as spellbook source.
+            return (MAINHAND.equals(this.slot) || OFFHAND.equals(this.slot)) ? CastSource.SWORD : CastSource.SPELLBOOK;
         }
     }
 

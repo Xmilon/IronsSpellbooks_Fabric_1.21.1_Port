@@ -20,7 +20,31 @@ public class TrueInvisibilityEffect extends MagicMobEffect implements ISyncedMob
     @Override
     public void onEffectAdded(LivingEntity livingEntity, int pAmplifier) {
         super.onEffectAdded(livingEntity, pAmplifier);
+        clearNearbyAggro(livingEntity);
+    }
 
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        // Keep dropping aggro while active, not only on first application.
+        return duration % 10 == 0;
+    }
+
+    @Override
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
+        if (!livingEntity.level().isClientSide) {
+            clearNearbyAggro(livingEntity);
+        }
+        // Force entity invisibility flag to keep all model layers hidden.
+        livingEntity.setInvisible(true);
+        return true;
+    }
+
+    @Override
+    public void clientTick(LivingEntity livingEntity, net.minecraft.world.effect.MobEffectInstance effectInstance) {
+        livingEntity.setInvisible(true);
+    }
+
+    private static void clearNearbyAggro(LivingEntity livingEntity) {
         var targetingCondition = TargetingConditions.forCombat().ignoreLineOfSight().selector(e -> {
             //IronsSpellbooks.LOGGER.debug("InvisibilitySpell TargetingConditions:{}", e);
             return (((Mob) e).getTarget() == livingEntity);
@@ -31,6 +55,7 @@ public class TrueInvisibilityEffect extends MagicMobEffect implements ISyncedMob
                 .forEach(entityTargetingCaster -> {
                     //IronsSpellbooks.LOGGER.debug("InvisibilitySpell Clear Target From:{}", entityTargetingCaster);
                     entityTargetingCaster.setTarget(null);
+                    entityTargetingCaster.setAggressive(false);
                     entityTargetingCaster.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
                 });
     }

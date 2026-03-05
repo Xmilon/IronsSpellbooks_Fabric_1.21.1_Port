@@ -18,7 +18,7 @@ package io.redspace.ironsspellbooks.item.spell_books;
 //    }
 //
 //    @Override
-//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid, ItemStack stack) {
+//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(TrinketSlotContext TrinketSlotContext, UUID uuid, ItemStack stack) {
 //        ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeBuilder = new ImmutableMultimap.Builder<>();
 //        for (Attribute attribute : defaultModifiers.keySet()) {
 //            var modifiers = defaultModifiers.get(attribute);

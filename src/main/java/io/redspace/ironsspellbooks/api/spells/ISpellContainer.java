@@ -5,7 +5,7 @@ import io.redspace.ironsspellbooks.registries.ComponentRegistry;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
+import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public interface ISpellContainer {
     }
 
     static ISpellContainer createImbuedContainer(AbstractSpell spell, int spellLevel, ItemStack itemStack) {
-        var spellContainer = create(1, true, (itemStack.getItem() instanceof ArmorItem || itemStack.getItem() instanceof ICurioItem)).mutableCopy();
+        var spellContainer = create(1, true, (itemStack.getItem() instanceof ArmorItem || itemStack.getItem() instanceof ITrinketItem)).mutableCopy();
         spellContainer.addSpellAtIndex(spell, spellLevel, 0, true);
         var i = spellContainer.toImmutable();
         ISpellContainer.set(itemStack, i);

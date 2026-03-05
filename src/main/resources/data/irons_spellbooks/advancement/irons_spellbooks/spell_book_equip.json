@@ -20,7 +20,7 @@
       "conditions": {
         "items": [
           {
-            "items": "#curios:spellbook"
+            "items": "#irons_spellbooks:is_spellbook"
           }
         ]
       }

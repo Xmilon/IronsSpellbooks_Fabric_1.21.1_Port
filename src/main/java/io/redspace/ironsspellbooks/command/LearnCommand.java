@@ -18,7 +18,7 @@ public class LearnCommand {
                         .executes((context) -> forgetAll(context.getSource())))
                 .then(Commands.literal("learn_all")
                         .executes((context) -> learnAll(context.getSource())))
-                .then(Commands.literal("learn").then(Commands.argument("spell", SpellArgument.spellArgument()).executes((commandContext) -> {
+                .then(Commands.literal("learn").then(Commands.argument("spell", com.mojang.brigadier.arguments.StringArgumentType.word()).executes((commandContext) -> {
                     return learn(commandContext.getSource(), commandContext.getArgument("spell", String.class));
                 })))
 

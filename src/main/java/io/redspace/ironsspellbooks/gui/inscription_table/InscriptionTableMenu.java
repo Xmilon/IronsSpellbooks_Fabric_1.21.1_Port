@@ -4,7 +4,7 @@ import io.redspace.ironsspellbooks.api.events.InscribeSpellEvent;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.item.Scroll;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.registries.BlockRegistry;
@@ -23,8 +23,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotResult;
 
 
 public class InscriptionTableMenu extends AbstractContainerMenu {
@@ -134,8 +134,8 @@ public class InscriptionTableMenu extends AbstractContainerMenu {
 //            this.addSlot(new ScrollExtractionSlot(handler, 2, 208, 136));
 //        });
 
-        ItemStack spellbookStack = CuriosApi.getCuriosInventory(inv.player)
-                .flatMap(curios -> curios.findCurio(Curios.SPELLBOOK_SLOT, 0).map(SlotResult::stack))
+        ItemStack spellbookStack = TrinketsApi.getTrinketsInventory(inv.player)
+                .flatMap(curios -> curios.findTrinket(TrinketsSlots.SPELLBOOK_SLOT, 0).map(TrinketSlotResult::stack))
                 .filter(stack -> !stack.isEmpty() && stack.getItem() instanceof SpellBook)
                 .orElse(ItemStack.EMPTY);
         if (!spellbookStack.isEmpty()) {

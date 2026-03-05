@@ -104,8 +104,22 @@ public class ScrollForgeTile extends BlockEntity implements MenuProvider {
         return tag;
     }
 
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        if (level != null) {
+            tag.put("inventory", itemHandler.serializeNBT(level.registryAccess()));
+        }
+        return tag;
+    }
+
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         loadAdditional(tag, lookupProvider);
+    }
+
+    public void handleUpdateTag(CompoundTag tag) {
+        if (level != null) {
+            loadAdditional(tag, level.registryAccess());
+        }
     }
 
     @Override
@@ -118,6 +132,13 @@ public class ScrollForgeTile extends BlockEntity implements MenuProvider {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         handleUpdateTag(pkt.getTag(), lookupProvider);
         level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+    }
+
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        if (level != null) {
+            handleUpdateTag(pkt.getTag(), level.registryAccess());
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
     }
 }
 

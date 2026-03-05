@@ -69,9 +69,10 @@ public class HeartstopSpell extends AbstractSpell {
 
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.HEARTSTOP, (int) getSpellPower(spellLevel, entity), 0, false, false, true));
+        entity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.HEARTSTOP.get()), (int) getSpellPower(spellLevel, entity), 0, false, false, true));
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);
     }
 }
+
 
 

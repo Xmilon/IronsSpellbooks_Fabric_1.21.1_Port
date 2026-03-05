@@ -98,7 +98,7 @@ public class RayOfSiphoningSpell extends AbstractSpell {
         if (playerMagicData.getAdditionalCastData() instanceof CastingMobAimingData aimData && entity instanceof Mob mob) {
             forward = aimData.getForward(entity);
         }
-        var hitResult = Utils.raycastForEntity(level, entity, entity.getEyePosition(), entity.getEyePosition().add(forward.scale(getRange(spellLevel))), true, .15f, Utils::canHitWithRaycast);
+        var hitResult = Utils.raycastForEntity(level, entity, Utils.getSpellCastStart(entity), Utils.getSpellCastStart(entity).add(forward.scale(getRange(spellLevel))), true, .15f, Utils::canHitWithRaycast);
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             Entity target = ((EntityHitResult) hitResult).getEntity();
             if (target.canBeHitByProjectile()) {

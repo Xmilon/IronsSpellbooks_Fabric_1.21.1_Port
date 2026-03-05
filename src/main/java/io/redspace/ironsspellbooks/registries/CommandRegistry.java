@@ -3,6 +3,9 @@ package io.redspace.ironsspellbooks.registries;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.redspace.ironsspellbooks.command.*;
 import io.redspace.ironsspellbooks.gui.inscription_table.InscriptionTableMenu;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleMenuProvider;
@@ -15,16 +18,27 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 @EventBusSubscriber()
 public class CommandRegistry {
+    public static void bootstrapFabric() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> registerCommands(dispatcher, registryAccess));
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
+        registerCommands(event.getDispatcher(), event.getBuildContext());
+    }
 
-        var commandDispatcher = event.getDispatcher();
-        var commandBuildContext = event.getBuildContext();
+    @SuppressWarnings("unchecked")
+    private static void registerCommands(CommandDispatcher<CommandSourceStack> commandDispatcher, CommandBuildContext commandBuildContext) {
+        if (commandDispatcher == null) {
+            return;
+        }
 
         CreateScrollCommand.register(commandDispatcher);
         CreateSpellBookCommand.register(commandDispatcher);
-        CreateImbuedSwordCommand.register(commandDispatcher, commandBuildContext);
+        if (commandBuildContext != null) {
+            CreateImbuedSwordCommand.register(commandDispatcher, commandBuildContext);
+        }
         CreateDebugWizardCommand.register(commandDispatcher);
         CastCommand.register(commandDispatcher);
         ManaCommand.register(commandDispatcher);
@@ -36,7 +50,6 @@ public class CommandRegistry {
 
         if (!FMLLoader.isProduction()) {
             ClearSpellSelectionCommand.register(commandDispatcher);
-            IronsDebugCommand.register(commandDispatcher);
             GenerateSiteData.register(commandDispatcher);
             commandDispatcher.register((LiteralArgumentBuilder<CommandSourceStack>) ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("it")).executes(source->((CommandSourceStack)source.getSource()).getPlayer().openMenu(new SimpleMenuProvider(
                     (i, inventory, player) ->

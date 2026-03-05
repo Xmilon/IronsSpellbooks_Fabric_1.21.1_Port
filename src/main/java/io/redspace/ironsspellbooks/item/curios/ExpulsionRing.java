@@ -1,6 +1,6 @@
 package io.redspace.ironsspellbooks.item.curios;
 
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,7 +20,7 @@ public class ExpulsionRing extends PassiveAbilityCurio {
     public static final int RADIUS_SQR = RADIUS * RADIUS;
 
     public ExpulsionRing() {
-        super(new Properties().stacksTo(1), Curios.RING_SLOT);
+        super(new Properties().stacksTo(1), TrinketsSlots.RING_SLOT);
     }
 
     @Override

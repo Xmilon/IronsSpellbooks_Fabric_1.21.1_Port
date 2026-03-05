@@ -69,7 +69,7 @@ public class ThunderstormSpell extends AbstractSpell {
 
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.THUNDERSTORM, getDurationTicks(spellLevel, entity), getAmplifierForLevel(spellLevel, entity), false, false, true));
+        entity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.THUNDERSTORM.get()), getDurationTicks(spellLevel, entity), getAmplifierForLevel(spellLevel, entity), false, false, true));
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
 
@@ -81,5 +81,6 @@ public class ThunderstormSpell extends AbstractSpell {
         return (int) ((20 + (2 * (spellLevel - 1) * getEntityPowerMultiplier(caster))) * 20);
     }
 }
+
 
 

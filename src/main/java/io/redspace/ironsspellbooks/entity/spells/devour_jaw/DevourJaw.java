@@ -45,7 +45,7 @@ public class DevourJaw extends AoeEntity {
                     var addition = 0;
                     if (oldVigor != null)
                         addition = oldVigor.getAmplifier() + 1;
-                    livingOwner.addEffect(new MobEffectInstance(MobEffectRegistry.VIGOR, 20 * 60, Math.min(vigorLevel + addition, 9), false, false, true));
+                    livingOwner.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.VIGOR.get()), 20 * 60, Math.min(vigorLevel + addition, 9), false, false, true));
                     livingOwner.heal((vigorLevel + 1) * 2);
                 }
             }
@@ -116,5 +116,6 @@ public class DevourJaw extends AoeEntity {
         this.yRotO = this.getYRot();
     }
 }
+
 
 

@@ -296,6 +296,9 @@ public class ClientPlayerEvents {
                     }
                 }
             }
+            if (!(stack.getItem() instanceof SpellBook)) {
+                lines.addAll(TooltipsUtils.formatCurioStatsTooltip(stack, player));
+            }
         });
     }
 

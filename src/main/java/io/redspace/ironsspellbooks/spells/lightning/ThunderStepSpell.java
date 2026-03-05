@@ -83,7 +83,7 @@ public class ThunderStepSpell extends AbstractSpell {
              */
             ThunderstepProjectile orb = new ThunderstepProjectile(level, entity);
             orb.shoot(entity.getLookAngle());
-            orb.moveTo(entity.getEyePosition());
+            orb.moveTo(Utils.getSpellCastStart(entity));
             level.addFreshEntity(orb);
             var recast = new RecastInstance(getSpellId(), spellLevel, 2, 100, castSource, new MultiTargetEntityCastData(orb));
             playerMagicData.getPlayerRecasts().addRecast(recast, playerMagicData);
@@ -131,7 +131,7 @@ public class ThunderStepSpell extends AbstractSpell {
     }
 
     private void zapEntitiesBetween(LivingEntity caster, int spellLevel, Vec3 blockEnd) {
-        Vec3 start = caster.getEyePosition();
+        Vec3 start = Utils.getSpellCastStart(caster);
         Vec3 end = blockEnd.add(0, caster.getEyeHeight(), 0);
         AABB range = caster.getBoundingBox().expandTowards(end.subtract(start));
         List<? extends Entity> entities = caster.level().getEntities(caster, range);

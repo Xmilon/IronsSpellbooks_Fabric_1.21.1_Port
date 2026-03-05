@@ -70,7 +70,7 @@ public class Snowball extends AbstractMagicProjectile {
                 if (Utils.hasLineOfSight(level, hitresult.getLocation(), entity.position().add(0, entity.getEyeHeight() * .5f, 0), true)) {
 //                    double p = (1 - Math.pow(Math.sqrt(distance) / (explosionRadius), 3));
 //                    entity.setTicksFrozen(entity.getTicksFrozen() + (int) (entity.getTicksRequiredToFreeze() * 2 * p));
-                    livingEntity.addEffect(new MobEffectInstance(MobEffectRegistry.CHILLED, (int) getDamage()));
+                    livingEntity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.CHILLED.get()), (int) getDamage()));
                 }
             }
         }
@@ -100,5 +100,6 @@ public class Snowball extends AbstractMagicProjectile {
     }
 
 }
+
 
 

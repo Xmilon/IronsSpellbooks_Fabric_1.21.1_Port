@@ -12,7 +12,7 @@
 		"sources": "https://github.com/iron431/irons-spells-n-spellbooks"
 	},
 	"license": "All Rights Reserved",
-	"icon": "assets/ironsspellbooks/icon.png",
+	"icon": "assets/irons_spellbooks/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -26,7 +26,7 @@
 		]
 	},
 	"mixins": [
-		"ironsspellbooks.mixins.json"
+		"irons_spellbooks.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

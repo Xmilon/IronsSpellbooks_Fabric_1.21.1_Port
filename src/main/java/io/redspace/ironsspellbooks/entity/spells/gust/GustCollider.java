@@ -67,7 +67,7 @@ public class GustCollider extends AbstractConeProjectile {
                 var knockback = new Vec3(entity.getX() - target.getX(), entity.getY() - target.getY(), entity.getZ() - target.getZ()).normalize().scale(-strength);
                 target.setDeltaMovement(target.getDeltaMovement().add(knockback));
                 target.hurtMarked = true;
-                target.addEffect(new MobEffectInstance(MobEffectRegistry.AIRBORNE, 60, amplifier));
+                target.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.AIRBORNE.get()), 60, amplifier));
             }
         }
     }
@@ -108,5 +108,6 @@ public class GustCollider extends AbstractConeProjectile {
         this.yRotO = this.getYRot();
     }
 }
+
 
 

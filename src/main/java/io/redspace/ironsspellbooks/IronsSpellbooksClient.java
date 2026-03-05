@@ -44,6 +44,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -89,7 +90,13 @@ public class IronsSpellbooksClient implements ClientModInitializer {
             ClientInputEvents.onClientTick(new net.neoforged.neoforge.client.event.ClientTickEvent.Post());
             if (client.player != null) {
                 ClientPlayerEvents.onPlayerTick(new net.neoforged.neoforge.event.tick.PlayerTickEvent.Pre(client.player));
-                ClientPlayerEvents.onClientEntityTick(new net.neoforged.neoforge.event.tick.EntityTickEvent.Pre(client.player));
+                if (client.level != null) {
+                    for (Entity entity : client.level.getEntities((Entity) null, client.player.getBoundingBox().inflate(128), candidate -> candidate instanceof LivingEntity)) {
+                        ClientPlayerEvents.onClientEntityTick(new net.neoforged.neoforge.event.tick.EntityTickEvent.Pre(entity));
+                    }
+                } else {
+                    ClientPlayerEvents.onClientEntityTick(new net.neoforged.neoforge.event.tick.EntityTickEvent.Pre(client.player));
+                }
             }
         });
     }

@@ -61,7 +61,7 @@ public class CounterspellSpell extends AbstractSpell {
 
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
-        Vec3 start = entity.getEyePosition();
+        Vec3 start = Utils.getSpellCastStart(entity);
         Vec3 end = start.add(entity.getForward().normalize().scale(80));
         HitResult hitResult = Utils.raycastForEntity(entity.level(), entity, start, end, true, 0.35f, Utils::validAntiMagicTarget);
         Vec3 forward = entity.getForward().normalize();
@@ -98,7 +98,7 @@ public class CounterspellSpell extends AbstractSpell {
         }
         double distance = entity.position().distanceTo(hitResult.getLocation());
         for (float i = 1; i < distance; i += .5f) {
-            Vec3 pos = entity.getEyePosition().add(forward.scale(i));
+            Vec3 pos = Utils.getSpellCastStart(entity).add(forward.scale(i));
             MagicManager.spawnParticles(world, ParticleTypes.ENCHANT, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, false);
         }
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);

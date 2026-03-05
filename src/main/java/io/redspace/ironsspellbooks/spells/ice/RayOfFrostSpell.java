@@ -78,7 +78,7 @@ public class RayOfFrostSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         var hitResult = Utils.raycastForEntity(level, entity, getRange(spellLevel, entity), true, .15f);
-        level.addFreshEntity(new RayOfFrostVisualEntity(level, entity.getEyePosition(), hitResult.getLocation(), entity));
+        level.addFreshEntity(new RayOfFrostVisualEntity(level, Utils.getSpellCastStart(entity), hitResult.getLocation(), entity));
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             Entity target = ((EntityHitResult) hitResult).getEntity();
             //Set freeze time right here because it scales off of level and power

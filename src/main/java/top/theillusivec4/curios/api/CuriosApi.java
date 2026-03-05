@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,32 +132,11 @@ public class CuriosApi {
             if (!(entity instanceof Player player)) {
                 return List.of();
             }
-            var entries = new java.util.ArrayList<CurioEntry>();
-            entries.addAll(scanTrinketCurios(player));
-            Map<String, Integer> nextIndexBySlot = countSlotIndexes(entries);
-
-            List<ItemStack> allStacks = new java.util.ArrayList<>();
-            allStacks.addAll(player.getInventory().items);
-            allStacks.addAll(player.getInventory().armor);
-            allStacks.addAll(player.getInventory().offhand);
-
-            for (int rawIndex = 0; rawIndex < allStacks.size(); rawIndex++) {
-                ItemStack stack = allStacks.get(rawIndex);
-                if (stack.isEmpty()) {
-                    continue;
-                }
-                String slotId = inferSlotId(stack);
-                if (slotId == null) {
-                    continue;
-                }
-                int slotIndex = nextIndexBySlot.getOrDefault(slotId, 0);
-                nextIndexBySlot.put(slotId, slotIndex + 1);
-                SlotContext slotContext = new SlotContext(slotId, entity, slotIndex, false, true);
-                final int inventoryIndex = rawIndex;
-                entries.add(new CurioEntry(rawIndex, stack, slotContext, newStack -> writeToPlayerInventory(player, inventoryIndex, newStack)));
+            if (TRINKETS_LOADED) {
+                // Never treat inventory/hand items as equipped when Trinkets is present.
+                return scanTrinketCurios(player);
             }
-            entries.sort(Comparator.comparingInt(entry -> entry.rawInventoryIndex));
-            return entries;
+            return List.of();
         }
 
         private List<CurioEntry> scanTrinketCurios(Player player) {
@@ -233,29 +211,6 @@ public class CuriosApi {
                 return Curios.NECKLACE_SLOT;
             }
             return null;
-        }
-
-        private static Map<String, Integer> countSlotIndexes(List<CurioEntry> entries) {
-            Map<String, Integer> counts = new HashMap<>();
-            for (CurioEntry entry : entries) {
-                counts.put(entry.slotContext.identifier(), counts.getOrDefault(entry.slotContext.identifier(), 0) + 1);
-            }
-            return counts;
-        }
-
-        private static void writeToPlayerInventory(Player player, int rawInventoryIndex, ItemStack newStack) {
-            int itemsSize = player.getInventory().items.size();
-            int armorSize = player.getInventory().armor.size();
-            if (rawInventoryIndex < itemsSize) {
-                player.getInventory().items.set(rawInventoryIndex, newStack);
-            } else if (rawInventoryIndex < itemsSize + armorSize) {
-                player.getInventory().armor.set(rawInventoryIndex - itemsSize, newStack);
-            } else {
-                int offhandIndex = rawInventoryIndex - itemsSize - armorSize;
-                if (offhandIndex >= 0 && offhandIndex < player.getInventory().offhand.size()) {
-                    player.getInventory().offhand.set(offhandIndex, newStack);
-                }
-            }
         }
 
         private String inferSlotId(ItemStack stack) {

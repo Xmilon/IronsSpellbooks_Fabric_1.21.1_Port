@@ -21,7 +21,8 @@ public class ScreenEffectsOverlay implements LayeredDraw.Layer {
     public final static ResourceLocation ICE_BLOCK_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/ice.png");
 
     public void render(GuiGraphics guiHelper, DeltaTracker deltaTracker) {
-        if (Minecraft.getInstance().options.hideGui || Minecraft.getInstance().player.isSpectator()) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null || Minecraft.getInstance().options.hideGui || player.isSpectator()) {
             return;
         }
         var screenWidth = guiHelper.guiWidth();
@@ -32,10 +33,6 @@ public class ScreenEffectsOverlay implements LayeredDraw.Layer {
 //            guiHelper.drawString(Minecraft.getInstance().font, String.format("blood: %s", Minecraft.getInstance().player.getAttributeValue(AttributeRegistry.BLOOD_SPELL_POWER)), 10, 20, 0xFFFFFF);
 //        }
 
-        Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
         if (player.hasEffect(MobEffectRegistry.HEARTSTOP)) {
             renderOverlayAdditive(guiHelper, HEARTSTOP_TEXTURE, 0.25f, 0, 0, .25f, screenWidth, screenHeight);
         }

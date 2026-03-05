@@ -82,7 +82,7 @@ public class SonicBoomSpell extends AbstractSpell {
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         CameraShakeManager.addCameraShake(new CameraShakeData(level, 20, entity.position(), 20));
         var range = getRange(spellLevel, entity);
-        Vec3 start = entity.getEyePosition();
+        Vec3 start = Utils.getSpellCastStart(entity);
         Vec3 end = start.add(entity.getForward().scale(range));
         AABB boundingBox = entity.getBoundingBox().expandTowards(end.subtract(start));
 
@@ -96,7 +96,7 @@ public class SonicBoomSpell extends AbstractSpell {
 
         Vec3 vec3 = entity.getLookAngle().normalize();
         for (int i = 0; i < range; i++) {
-            var vec32 = vec3.scale(i).add(entity.getEyePosition());
+            var vec32 = vec3.scale(i).add(Utils.getSpellCastStart(entity));
             MagicManager.spawnParticles(level, ParticleTypes.SONIC_BOOM, vec32.x, vec32.y, vec32.z, 1, 0, 0, 0, 0, false);
         }
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);

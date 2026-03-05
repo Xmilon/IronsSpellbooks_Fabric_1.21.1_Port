@@ -109,7 +109,7 @@ public class BurningDashSpell extends AbstractSpell {
         ));
 
 
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.BURNING_DASH, 15, getDamage(spellLevel, entity), false, false, false));
+        entity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.BURNING_DASH.get()), 15, getDamage(spellLevel, entity), false, false, false));
         entity.invulnerableTime = 20;
         //startSpinAttack(entity, 10);
         playerMagicData.getSyncedData().setSpinAttackType(SpinAttackType.FIRE);
@@ -149,5 +149,6 @@ public class BurningDashSpell extends AbstractSpell {
         }
     }
 }
+
 
 

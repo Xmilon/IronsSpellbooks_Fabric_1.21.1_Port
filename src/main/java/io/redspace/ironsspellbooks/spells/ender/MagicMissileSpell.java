@@ -56,7 +56,7 @@ public class MagicMissileSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         MagicMissileProjectile magicMissileProjectile = new MagicMissileProjectile(world, entity);
-        magicMissileProjectile.setPos(entity.position().add(0, entity.getEyeHeight() - magicMissileProjectile.getBoundingBox().getYsize() * .5f, 0));
+        magicMissileProjectile.setPos(Utils.getSpellCastStart(entity).add(0, -magicMissileProjectile.getBoundingBox().getYsize() * .35f, 0));
         magicMissileProjectile.shoot(entity.getLookAngle());
         magicMissileProjectile.setDamage(getDamage(spellLevel, entity));
         world.addFreshEntity(magicMissileProjectile);

@@ -3,16 +3,26 @@ package io.redspace.ironsspellbooks.api.registry;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.attribute.MagicPercentAttribute;
 import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
+import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
 
 
 @EventBusSubscriber(modid = IronsSpellbooks.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -72,5 +82,76 @@ public class AttributeRegistry {
         }
         AttributeInstance instance = entity.getAttribute(attribute);
         return instance != null ? instance.getValue() : fallback;
+    }
+
+    public static double getMaxManaWithFallback(LivingEntity entity) {
+        double fromAttributes = getValueOrDefault(entity, MAX_MANA, 100.0D);
+        if (!(entity instanceof Player player)) {
+            return fromAttributes;
+        }
+
+        double fromEquipment = getMaxManaFromEquipment(player);
+        double fromSpellbookCurio = getMaxManaFromSpellbookCurio(player);
+        return Math.max(fromAttributes, Math.max(fromEquipment, fromSpellbookCurio));
+    }
+
+    private static double getMaxManaFromEquipment(Player player) {
+        double base = 100.0D;
+        double additive = 0.0D;
+        double multipliedBase = 0.0D;
+        double multipliedTotal = 0.0D;
+
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+                continue;
+            }
+            ItemStack stack = player.getItemBySlot(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+            for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
+                if (entry.attribute().value() != MAX_MANA.get()) {
+                    continue;
+                }
+                if (entry.slot() != EquipmentSlotGroup.bySlot(slot)) {
+                    continue;
+                }
+                switch (entry.modifier().operation()) {
+                    case ADD_VALUE -> additive += entry.modifier().amount();
+                    case ADD_MULTIPLIED_BASE -> multipliedBase += entry.modifier().amount();
+                    case ADD_MULTIPLIED_TOTAL -> multipliedTotal += entry.modifier().amount();
+                }
+            }
+        }
+
+        return Math.max(100.0D, (base + additive) * (1.0D + multipliedBase) * (1.0D + multipliedTotal));
+    }
+
+    private static double getMaxManaFromSpellbookCurio(Player player) {
+        ItemStack spellbookStack = Utils.getPlayerEquippedSpellbookStack(player);
+        if (spellbookStack == null || spellbookStack.isEmpty() || !(spellbookStack.getItem() instanceof ITrinketItem curioItem)) {
+            return 100.0D;
+        }
+
+        var TrinketSlotContext = new TrinketSlotContext(TrinketsSlots.SPELLBOOK_SLOT, player, 0, false, true);
+        var modifiers = curioItem.getAttributeModifiers(TrinketSlotContext, IronsSpellbooks.id("max_mana_fallback"), spellbookStack);
+        double base = 100.0D;
+        double additive = 0.0D;
+        double multipliedBase = 0.0D;
+        double multipliedTotal = 0.0D;
+
+        for (var entry : modifiers.entries()) {
+            if (entry.getKey().value() != MAX_MANA.get()) {
+                continue;
+            }
+            switch (entry.getValue().operation()) {
+                case ADD_VALUE -> additive += entry.getValue().amount();
+                case ADD_MULTIPLIED_BASE -> multipliedBase += entry.getValue().amount();
+                case ADD_MULTIPLIED_TOTAL -> multipliedTotal += entry.getValue().amount();
+            }
+        }
+
+        return Math.max(100.0D, (base + additive) * (1.0D + multipliedBase) * (1.0D + multipliedTotal));
     }
 }

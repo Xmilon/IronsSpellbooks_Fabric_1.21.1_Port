@@ -1,7 +1,9 @@
 package io.redspace.ironsspellbooks.mixin;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
 import io.redspace.ironsspellbooks.effect.IMobEffectEndCallback;
@@ -31,12 +33,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
 
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
+    @Unique
+    private static final Map<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> irons_spellbooks$curioAttributeCache = new WeakHashMap<>();
 
     @Inject(method = "onEffectRemoved", at = @At(value = "HEAD"))
     public void irons_spellbooks$onEffectRemoved(MobEffectInstance effectInstance, CallbackInfo ci) {
@@ -150,6 +157,48 @@ public abstract class LivingEntityMixin {
             }
         }
         return map;
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void irons_spellbooks$applyCurioAttributes(CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (!(self instanceof net.minecraft.world.entity.player.Player player)) {
+            return;
+        }
+
+        Multimap<Holder<Attribute>, AttributeModifier> nextModifiers = HashMultimap.create();
+        TrinketsApi.getTrinketsInventory(player).ifPresent(curios -> {
+            for (var result : curios.findTrinkets(stack -> !stack.isEmpty())) {
+                var stack = result.stack();
+                if (!(stack.getItem() instanceof ITrinketItem curioItem)) {
+                    continue;
+                }
+
+                var TrinketSlotContext = result.slotContext();
+                var itemModifiers = curioItem.getAttributeModifiers(TrinketSlotContext, IronsSpellbooks.id("equipped_curio_" + TrinketSlotContext.identifier() + "_" + TrinketSlotContext.index()), stack);
+                if (!itemModifiers.isEmpty()) {
+                    // Client players can occasionally miss custom attribute instances during init.
+                    // Only apply modifiers for attributes that actually exist to avoid render-thread warn spam.
+                    itemModifiers.asMap().forEach((attribute, modifiers) -> {
+                        if (self.getAttribute(attribute) != null) {
+                            for (var modifier : modifiers) {
+                                nextModifiers.put(attribute, modifier);
+                            }
+                        }
+                    });
+                }
+                curioItem.trinketTick(TrinketSlotContext, stack);
+            }
+        });
+
+        Multimap<Holder<Attribute>, AttributeModifier> previousModifiers = irons_spellbooks$curioAttributeCache.get(self);
+        if (previousModifiers != null && !previousModifiers.isEmpty()) {
+            self.getAttributes().removeAttributeModifiers(previousModifiers);
+        }
+        if (!nextModifiers.isEmpty()) {
+            self.getAttributes().addTransientAttributeModifiers(nextModifiers);
+        }
+        irons_spellbooks$curioAttributeCache.put(self, ImmutableMultimap.copyOf(nextModifiers));
     }
 
 }

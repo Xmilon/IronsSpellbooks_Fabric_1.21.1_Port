@@ -2,8 +2,10 @@ package io.redspace.ironsspellbooks.util;
 
 import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.item.Scroll;
 import io.redspace.ironsspellbooks.player.ClientInputEvents;
 import net.minecraft.ChatFormatting;
@@ -19,11 +21,17 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 public class TooltipsUtils {
@@ -135,6 +143,80 @@ public class TooltipsUtils {
             return lines;
         }
         return List.of();
+    }
+
+    public static List<Component> formatSpellbookStatsTooltip(ItemStack stack, Player player) {
+        if (!(stack.getItem() instanceof ITrinketItem curioItem)) {
+            return List.of();
+        }
+
+        var TrinketSlotContext = new TrinketSlotContext(TrinketsSlots.SPELLBOOK_SLOT, player, 0, false, true);
+        var modifiers = curioItem.getAttributeModifiers(TrinketSlotContext, IronsSpellbooks.id("spellbook_tooltip"), stack);
+        if (modifiers.isEmpty()) {
+            return List.of();
+        }
+
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.empty());
+        lines.add(Component.translatable("TrinketsSlots.modifiers.spellbook").withStyle(ChatFormatting.GRAY));
+        modifiers.entries().stream()
+                .sorted(Comparator.comparing(entry -> entry.getKey().value().getDescriptionId()))
+                .forEach(entry -> {
+                    AttributeModifier modifier = entry.getValue();
+                    double amount = modifier.amount();
+                    if (modifier.operation() != AttributeModifier.Operation.ADD_VALUE) {
+                        amount *= 100.0D;
+                    }
+                    boolean positive = amount >= 0.0D;
+                    String key = positive ? "attribute.modifier.plus." : "attribute.modifier.take.";
+                    double displayAmount = Math.abs(amount);
+                    lines.add(Component.literal(" ").append(Component.translatable(
+                            key + modifier.operation().id(),
+                            ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(displayAmount),
+                            Component.translatable(entry.getKey().value().getDescriptionId())
+                    ).withStyle(positive ? ChatFormatting.BLUE : ChatFormatting.RED)));
+                });
+        return lines;
+    }
+
+    public static List<Component> formatCurioStatsTooltip(ItemStack stack, Player player) {
+        if (!(stack.getItem() instanceof ITrinketItem curioItem)) {
+            return List.of();
+        }
+
+        var slotIds = TrinketsApi.getTrinketsHelper().getTrinketTags(stack.getItem());
+        if (slotIds.isEmpty()) {
+            return List.of();
+        }
+        String slotId = slotIds.getFirst();
+
+        var TrinketSlotContext = new TrinketSlotContext(slotId, player, 0, false, true);
+        var modifiers = curioItem.getAttributeModifiers(TrinketSlotContext, IronsSpellbooks.id("curio_tooltip"), stack);
+        if (modifiers.isEmpty()) {
+            return List.of();
+        }
+
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.empty());
+        lines.add(Component.translatable("TrinketsSlots.modifiers." + slotId).withStyle(ChatFormatting.GRAY));
+        modifiers.entries().stream()
+                .sorted(Comparator.comparing(entry -> entry.getKey().value().getDescriptionId()))
+                .forEach(entry -> {
+                    AttributeModifier modifier = entry.getValue();
+                    double amount = modifier.amount();
+                    if (modifier.operation() != AttributeModifier.Operation.ADD_VALUE) {
+                        amount *= 100.0D;
+                    }
+                    boolean positive = amount >= 0.0D;
+                    String key = positive ? "attribute.modifier.plus." : "attribute.modifier.take.";
+                    double displayAmount = Math.abs(amount);
+                    lines.add(Component.literal(" ").append(Component.translatable(
+                            key + modifier.operation().id(),
+                            ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(displayAmount),
+                            Component.translatable(entry.getKey().value().getDescriptionId())
+                    ).withStyle(positive ? ChatFormatting.BLUE : ChatFormatting.RED)));
+                });
+        return lines;
     }
 
     public static void addShiftTooltip(List<Component> currentTooltip, List<Component> tooltipToAdd) {

@@ -83,7 +83,7 @@ public class PortalSpell extends AbstractSpell {
 
     public static BlockHitResult getTargetBlock(Level level, LivingEntity entity, ClipContext.Fluid clipContext, double reach) {
         var rotation = entity.getLookAngle().normalize().scale(reach);
-        var pos = entity.getEyePosition();
+        var pos = Utils.getSpellCastStart(entity);
         var dest = rotation.add(pos);
         return level.clip(new ClipContext(pos, dest, ClipContext.Block.OUTLINE, clipContext, entity));
     }

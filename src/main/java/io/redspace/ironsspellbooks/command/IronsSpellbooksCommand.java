@@ -132,7 +132,7 @@ public class IronsSpellbooksCommand {
         command.then(Commands.literal("config")
                 .then(Commands.literal("regenerate_example").executes(IronsSpellbooksCommand::regenerateExampleSpellConfigFile))
                 .then(Commands.literal("generate_file")
-                        .then(Commands.argument("spell", SpellArgument.spellArgument())
+                        .then(Commands.argument("spell", com.mojang.brigadier.arguments.StringArgumentType.word())
                                 .then(Commands.literal("full").executes(c -> generateSpellConfigFile(c, true, false)).then(Commands.literal("override").executes(c -> generateSpellConfigFile(c, true, true))))
                                 .then(Commands.literal("skeleton").executes(c -> generateSpellConfigFile(c, false, false)).then(Commands.literal("override").executes(c -> generateSpellConfigFile(c, false, true))))))
                 .then(Commands.literal("list").executes(c -> {

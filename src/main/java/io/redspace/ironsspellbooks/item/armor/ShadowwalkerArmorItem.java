@@ -1,8 +1,6 @@
 package io.redspace.ironsspellbooks.item.armor;
 
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
-import io.redspace.ironsspellbooks.entity.armor.ShadowwalkerArmorModel;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.minecraft.world.item.ArmorItem;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +15,6 @@ public class ShadowwalkerArmorItem extends ImbuableChestplateArmorItem implement
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new ShadowwalkerArmorModel());
+        return ArmorClientRenderers.create(this);
     }
 }

@@ -47,7 +47,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
-import top.theillusivec4.curios.api.CuriosApi;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -148,8 +148,8 @@ public abstract class AbstractSpell {
     public final int getLevelFor(int level, @Nullable LivingEntity caster) {
         int addition = 0;
         if (caster != null) {
-            addition = CuriosApi.getCuriosInventory(caster)
-                    .map(inv -> inv.findCurios(AffinityData::hasAffinityData).stream()
+            addition = TrinketsApi.getTrinketsInventory(caster)
+                    .map(inv -> inv.findTrinkets(AffinityData::hasAffinityData).stream()
                             .mapToInt(slot -> AffinityData.getAffinityData(slot.stack()).getBonusFor(this)).sum()).orElse(0);
         }
         var levelEvent = new ModifySpellLevelEvent(this, caster, level, level + addition);
@@ -316,7 +316,7 @@ public abstract class AbstractSpell {
         if (castSource.consumesMana() && !playerAlreadyHasRecast && !(serverPlayer.isCreative() && !ServerConfigs.CREATIVE_MANA_COST.get())) {
             var newMana = Math.max(magicData.getMana() - event.getManaCost(), 0);
             magicData.setMana(newMana);
-            PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData));
+            PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData, serverPlayer));
         }
         onCast(world, event.getSpellLevel(), serverPlayer, castSource, magicData);
 

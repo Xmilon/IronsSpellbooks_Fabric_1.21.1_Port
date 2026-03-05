@@ -71,7 +71,7 @@ public class PoisonArrowSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         PoisonArrow magicArrow = new PoisonArrow(level, entity);
-        magicArrow.setPos(entity.position().add(0, entity.getEyeHeight() - magicArrow.getBoundingBox().getYsize() * .5f, 0).add(entity.getForward()));
+        magicArrow.setPos(Utils.getSpellCastStart(entity).add(0, -magicArrow.getBoundingBox().getYsize() * .35f, 0).add(entity.getForward()));
         magicArrow.shoot(entity.getLookAngle());
         magicArrow.setDamage(getArrowDamage(spellLevel, entity));
         magicArrow.setAoeDamage(getAOEDamage(spellLevel, entity));

@@ -2,8 +2,6 @@ package io.redspace.ironsspellbooks.item.armor;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.entity.armor.ElectromancerArmorModel;
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
@@ -24,7 +22,7 @@ public class ElectromancerArmorItem extends ImbuableChestplateArmorItem implemen
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new ElectromancerArmorModel());
+        return ArmorClientRenderers.create(this);
     }
 
 

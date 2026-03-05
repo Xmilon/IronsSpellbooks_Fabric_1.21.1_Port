@@ -1,11 +1,9 @@
 {
   "entities": [
-    "player"
+    "minecraft:player"
   ],
   "slots": [
-    "hand/ring",
-    "offhand/ring",
-    "spellbook/spellbook",
-    "chest/necklace"
+    "ring/ring",
+    "spellbook/spellbook"
   ]
 }

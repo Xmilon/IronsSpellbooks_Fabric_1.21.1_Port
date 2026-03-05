@@ -70,7 +70,7 @@ public class GuidingBoltSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         GuidingBoltProjectile guidingBolt = new GuidingBoltProjectile(world, entity);
-        guidingBolt.setPos(entity.position().add(0, entity.getEyeHeight() - guidingBolt.getBoundingBox().getYsize() * .5f, 0));
+        guidingBolt.setPos(Utils.getSpellCastStart(entity).add(0, -guidingBolt.getBoundingBox().getYsize() * .35f, 0));
         guidingBolt.shoot(entity.getLookAngle());
         guidingBolt.setDamage(getDamage(spellLevel, entity));
         world.addFreshEntity(guidingBolt);

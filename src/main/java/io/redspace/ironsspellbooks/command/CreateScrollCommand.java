@@ -21,7 +21,7 @@ public class CreateScrollCommand {
     public static void register(CommandDispatcher<CommandSourceStack> pDispatcher) {
         pDispatcher.register(Commands.literal("createScroll").requires((p_138819_) -> {
             return p_138819_.hasPermission(2);
-        }).then(Commands.argument("spell", SpellArgument.spellArgument()).then(Commands.argument("level", IntegerArgumentType.integer(1)).executes((commandContext) -> {
+        }).then(Commands.argument("spell", com.mojang.brigadier.arguments.StringArgumentType.word()).then(Commands.argument("level", IntegerArgumentType.integer(1)).executes((commandContext) -> {
             return createScroll(commandContext.getSource(), commandContext.getArgument("spell", String.class), IntegerArgumentType.getInteger(commandContext, "level"));
         }))));
     }

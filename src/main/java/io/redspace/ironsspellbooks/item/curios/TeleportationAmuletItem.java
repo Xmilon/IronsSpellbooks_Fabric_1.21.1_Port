@@ -3,7 +3,7 @@ package io.redspace.ironsspellbooks.item.curios;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.ChatFormatting;
@@ -18,8 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
 
 import java.util.List;
 
@@ -27,19 +27,19 @@ public class TeleportationAmuletItem extends SimpleDescriptiveCurio {
     private static final Component VANITY_DESCRIPTION = Component.translatable("item.irons_spellbooks.teleportation_amulet.desc.alt").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
 
     public TeleportationAmuletItem(Properties properties) {
-        super(properties, Curios.NECKLACE_SLOT);
+        super(properties, TrinketsSlots.NECKLACE_SLOT);
     }
 
-    private void handleCurse(SlotContext slotContext, ItemStack stack) {
-        var entity = slotContext.entity();
-        if (entity != null && !slotContext.entity().level().isClientSide && !canUse(entity)) {
-            CuriosApi.getCuriosInventory(slotContext.entity()).ifPresent(
+    private void handleCurse(TrinketSlotContext TrinketSlotContext, ItemStack stack) {
+        var entity = TrinketSlotContext.entity();
+        if (entity != null && !TrinketSlotContext.entity().level().isClientSide && !canUse(entity)) {
+            TrinketsApi.getTrinketsInventory(TrinketSlotContext.entity()).ifPresent(
                     handler ->
                     {
-                        var equippedStack = handler.getEquippedCurios().getStackInSlot(slotContext.index());
+                        var equippedStack = handler.getEquippedTrinkets().getStackInSlot(TrinketSlotContext.index());
                         if (ItemStack.matches(stack, equippedStack)) {
-                            handler.setEquippedCurio(Curios.NECKLACE_SLOT, slotContext.index(), ItemStack.EMPTY);
-                            createItemEntity(slotContext.entity().level(), stack, slotContext.entity().position());
+                            handler.setEquippedTrinket(TrinketsSlots.NECKLACE_SLOT, TrinketSlotContext.index(), ItemStack.EMPTY);
+                            createItemEntity(TrinketSlotContext.entity().level(), stack, TrinketSlotContext.entity().position());
                         }
                     }
             );
@@ -60,11 +60,11 @@ public class TeleportationAmuletItem extends SimpleDescriptiveCurio {
     }
 
 
-    public void curioTick(SlotContext slotContext, ItemStack stack) {
-        super.curioTick(slotContext, stack);
+    public void trinketTick(TrinketSlotContext TrinketSlotContext, ItemStack stack) {
+        super.trinketTick(TrinketSlotContext, stack);
         //Using short modulo on tick because #onEquip fires before the living entity's attributes are calculated on relog/entity creation, meaning the curse will erroneously fire
-        if (slotContext.entity().tickCount % 5 == 0) {
-            handleCurse(slotContext, stack);
+        if (TrinketSlotContext.entity().tickCount % 5 == 0) {
+            handleCurse(TrinketSlotContext, stack);
         }
     }
 

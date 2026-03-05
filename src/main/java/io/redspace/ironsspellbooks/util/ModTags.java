@@ -32,7 +32,7 @@ public class ModTags {
     public static final TagKey<Item> BASE_WIZARD_CHESTPLATE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "wizard_base_chestplate"));
     public static final TagKey<Item> BASE_WIZARD_LEGGINGS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "wizard_base_leggings"));
     public static final TagKey<Item> BASE_WIZARD_BOOTS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "wizard_base_boots"));
-    public static final TagKey<Item> SPELLBOOK_CURIO = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("curios", "spellbook"));
+    public static final TagKey<Item> SPELLBOOK_CURIO = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "is_spellbook"));
     public static final TagKey<Block> SPECTRAL_HAMMER_MINEABLE = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "spectral_hammer_mineable"));
     public static final TagKey<Block> GUARDED_BY_WIZARDS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "guarded_by_wizards"));
     public static final TagKey<Block> PREVENT_POCKET_DIMENSION_PLACEMENT = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "pocket_dimension_prevent_placement"));

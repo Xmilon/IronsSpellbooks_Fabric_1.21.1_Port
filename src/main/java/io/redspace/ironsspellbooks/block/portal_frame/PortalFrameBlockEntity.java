@@ -37,6 +37,7 @@ public class PortalFrameBlockEntity extends BlockEntity {
      */
     private @Nullable UUID ownerUUID = null;
     boolean clientIsConnected;
+    private int syncTicker;
 
     public PortalFrameBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
         this(BlockRegistry.PORTAL_FRAME_BLOCK_ENTITY.get(), pWorldPosition, pBlockState);
@@ -146,6 +147,7 @@ public class PortalFrameBlockEntity extends BlockEntity {
                 portalData.getConnectedPortalPos(uuid).ifPresent(portalPos -> {
                     Vec3 destination = portalPos.pos();
                     serverLevel.playSound(null, this.getBlockPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1f, 1f);
+                    ServerLevel destinationLevel = serverLevel;
                     if (serverLevel.dimension().equals(portalPos.dimension())) {
                         entity.teleportTo(serverLevel, destination.x, destination.y, destination.z, RelativeMovement.ROTATION, portalPos.rotation(), entity.getXRot());
                     } else {
@@ -153,9 +155,10 @@ public class PortalFrameBlockEntity extends BlockEntity {
                         var dim = server.getLevel(portalPos.dimension());
                         if (dim != null) {
                             entity.changeDimension(new DimensionTransition(dim, destination, Vec3.ZERO, portalPos.rotation(), entity.getXRot(), DimensionTransition.DO_NOTHING));
-                            dim.playSound(null, destination.x, destination.y, destination.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1f, 1f);
+                            destinationLevel = dim;
                         }
                     }
+                    destinationLevel.playSound(null, destination.x, destination.y, destination.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1f, 1f);
                 });
             }
         }
@@ -174,6 +177,9 @@ public class PortalFrameBlockEntity extends BlockEntity {
         if (tag.contains("color")) {
             color = tag.getInt("color");
         }
+        if (tag.contains("connected")) {
+            this.clientIsConnected = tag.getBoolean("connected");
+        }
     }
 
     @Override
@@ -181,6 +187,7 @@ public class PortalFrameBlockEntity extends BlockEntity {
         super.saveAdditional(tag, pRegistries);
         if (isPrimary(this.getBlockState())) {
             tag.putInt("color", color);
+            tag.putBoolean("connected", this.isPortalConnected());
             var uuid = getUUID();
             if (uuid != null) {
                 tag.putUUID("uuid", uuid);
@@ -203,6 +210,14 @@ public class PortalFrameBlockEntity extends BlockEntity {
         return tag;
     }
 
+    // Compatibility for environments where BlockEntity#getUpdateTag has no registries parameter.
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("connected", this.isPortalConnected());
+        tag.putInt("color", color);
+        return tag;
+    }
+
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         var packet = ClientboundBlockEntityDataPacket.create(this);
@@ -210,13 +225,29 @@ public class PortalFrameBlockEntity extends BlockEntity {
     }
 
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        handleUpdateTag(pkt.getTag(), lookupProvider);
+        applyClientSyncTag(pkt.getTag());
         if (level != null) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        applyClientSyncTag(tag);
+    }
+
+    // Compatibility for environments where onDataPacket/handleUpdateTag have no registries parameter.
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        applyClientSyncTag(pkt.getTag());
+    }
+
+    public void handleUpdateTag(CompoundTag tag) {
+        applyClientSyncTag(tag);
+    }
+
+    private void applyClientSyncTag(CompoundTag tag) {
+        if (tag == null) {
+            return;
+        }
         this.clientIsConnected = tag.getBoolean("connected");
         color = tag.getInt("color");
     }
@@ -243,6 +274,13 @@ public class PortalFrameBlockEntity extends BlockEntity {
     public static void serverTick(Level level, BlockPos pos, BlockState blockState, PortalFrameBlockEntity portalFrameBlockEntity) {
         if (level.getGameTime() % 5 == 0) {
             PortalManager.INSTANCE.processCooldownTick(portalFrameBlockEntity.getUUID(), -5);
+        }
+        if (isPrimary(blockState)) {
+            // Periodic BE sync keeps client portal-frame visuals reliable on dedicated servers.
+            if (--portalFrameBlockEntity.syncTicker <= 0) {
+                portalFrameBlockEntity.syncTicker = 20;
+                portalFrameBlockEntity.setChanged();
+            }
         }
         if (portalFrameBlockEntity.active) {
             portalFrameBlockEntity.active = --portalFrameBlockEntity.activeCooldown > 0;

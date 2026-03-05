@@ -68,7 +68,7 @@ public class ActiveSpellOverlay implements LayeredDraw.Layer {
 
         int centerX, centerY;
         //GUI:522 (offhand slot location)
-        centerX = screenWidth / 2 + 91 + 9;// + 29;
+        centerX = screenWidth / 2 + 91 + 33;
         centerY = screenHeight - 23;
 
         //

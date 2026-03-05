@@ -69,7 +69,7 @@ public class SnowballSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         Snowball orb = new Snowball(level, entity);
-        orb.setPos(entity.position().add(0, entity.getEyeHeight() - orb.getBoundingBox().getYsize() * .5f, 0).add(entity.getForward()));
+        orb.setPos(Utils.getSpellCastStart(entity).add(0, -orb.getBoundingBox().getYsize() * .35f, 0).add(entity.getForward()));
         orb.shoot(entity.getLookAngle());
         orb.setDeltaMovement(orb.getDeltaMovement().add(0, 0.2, 0));
         orb.setExplosionRadius(getRadius(spellLevel, entity));

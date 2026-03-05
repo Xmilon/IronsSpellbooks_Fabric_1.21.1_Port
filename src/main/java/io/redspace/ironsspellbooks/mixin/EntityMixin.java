@@ -38,6 +38,11 @@ public abstract class EntityMixin {
     public void isInvisibleTo(Player player, CallbackInfoReturnable<Boolean> cir) {
         if (ItemRegistry.INVISIBILITY_RING.get().isEquippedBy(player)) {
             cir.setReturnValue(false);
+            return;
+        }
+        Entity self = ((Entity) (Object) this);
+        if (self instanceof LivingEntity living && living.hasEffect(MobEffectRegistry.TRUE_INVISIBILITY)) {
+            cir.setReturnValue(true);
         }
     }
 }

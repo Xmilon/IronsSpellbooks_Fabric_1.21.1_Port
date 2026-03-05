@@ -1,6 +1,7 @@
 package io.redspace.ironsspellbooks.gui.overlays;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
 import io.redspace.ironsspellbooks.item.CastingItem;
@@ -117,12 +118,10 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
     }
 
     private static int getPlayerMaxMana(Player player) {
-        int fromAttributes = 100;
-        if (player.getAttribute(MAX_MANA) != null) {
-            fromAttributes = (int) player.getAttributeValue(MAX_MANA);
-        }
+        int fromSynced = ClientMagicData.getSyncedMaxMana();
+        int fromAttributes = (int) AttributeRegistry.getValueOrDefault(player, MAX_MANA, 100.0D);
         int fromEquipment = getFallbackMaxManaFromEquipment(player);
-        return Math.max(fromAttributes, fromEquipment);
+        return Math.max(Math.max(fromSynced, fromAttributes), fromEquipment);
     }
 
     private static int getFallbackMaxManaFromEquipment(Player player) {
@@ -132,6 +131,9 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
         double multipliedTotal = 0.0;
 
         for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+                continue;
+            }
             ItemStack stack = player.getItemBySlot(slot);
             if (stack.isEmpty()) {
                 continue;

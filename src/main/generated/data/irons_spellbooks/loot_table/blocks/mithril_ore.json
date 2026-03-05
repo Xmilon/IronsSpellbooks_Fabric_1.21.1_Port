@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:mithril_ore"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

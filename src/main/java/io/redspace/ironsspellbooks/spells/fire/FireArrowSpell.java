@@ -72,7 +72,7 @@ public class FireArrowSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         FireArrowProjectile magicArrow = new FireArrowProjectile(level, entity);
-        magicArrow.setPos(entity.position().add(0, entity.getEyeHeight() - magicArrow.getBoundingBox().getYsize() * .5f, 0).add(entity.getForward()));
+        magicArrow.setPos(Utils.getSpellCastStart(entity).add(0, -magicArrow.getBoundingBox().getYsize() * .35f, 0).add(entity.getForward()));
         magicArrow.shoot(entity.getLookAngle());
         magicArrow.setDamage(getDamage(spellLevel, entity));
         magicArrow.setExplosionRadius(getRadius(spellLevel, entity));

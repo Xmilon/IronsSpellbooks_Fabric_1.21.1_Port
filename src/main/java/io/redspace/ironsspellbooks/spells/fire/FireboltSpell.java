@@ -59,7 +59,7 @@ public class FireboltSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         FireboltProjectile firebolt = new FireboltProjectile(world, entity);
-        firebolt.setPos(entity.position().add(0, entity.getEyeHeight() - firebolt.getBoundingBox().getYsize() * .5f, 0));
+        firebolt.setPos(Utils.getSpellCastStart(entity).add(0, -firebolt.getBoundingBox().getYsize() * .35f, 0));
         firebolt.shoot(entity.getLookAngle());
         firebolt.setDamage(getDamage(spellLevel, entity));
         world.addFreshEntity(firebolt);

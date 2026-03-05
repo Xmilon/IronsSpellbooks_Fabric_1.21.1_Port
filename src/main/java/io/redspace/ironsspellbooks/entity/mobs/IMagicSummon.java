@@ -8,6 +8,7 @@ import io.redspace.ironsspellbooks.effect.SummonTimer;
 import io.redspace.ironsspellbooks.mixin.EntityAccessor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -97,14 +98,15 @@ public interface IMagicSummon extends AntiMagicSusceptible {
         */
         var reason = entity.getRemovalReason();
         if (reason != null && getSummoner() instanceof ServerPlayer player && reason.shouldDestroy()) {
-            var effect = player.getEffect(holder);
+            var effectHolder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(holder.get());
+            var effect = player.getEffect(effectHolder);
             if (effect != null) {
-                var decrement = new MobEffectInstance(holder, effect.getDuration(), effect.getAmplifier() - 1, false, false, true);
+                var decrement = new MobEffectInstance(effectHolder, effect.getDuration(), effect.getAmplifier() - 1, false, false, true);
                 if (decrement.getAmplifier() >= 0) {
-                    player.getActiveEffectsMap().put(holder, decrement);
+                    player.getActiveEffectsMap().put(effectHolder, decrement);
                     player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), decrement, false));
                 } else {
-                    player.removeEffect(holder);
+                    player.removeEffect(effectHolder);
                 }
             }
         }

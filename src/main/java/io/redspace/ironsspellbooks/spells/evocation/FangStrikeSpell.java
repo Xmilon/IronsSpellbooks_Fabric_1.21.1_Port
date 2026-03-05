@@ -71,7 +71,7 @@ public class FangStrikeSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         Vec3 forward = entity.getForward().multiply(1, 0, 1).normalize();
-        Vec3 start = entity.getEyePosition().add(forward.scale(1.5));
+        Vec3 start = Utils.getSpellCastStart(entity).add(forward.scale(1.5));
 
         for (int i = 0; i < getCount(spellLevel, entity); i++) {
             Vec3 spawn = start.add(forward.scale(i));

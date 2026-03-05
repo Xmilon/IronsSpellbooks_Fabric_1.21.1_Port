@@ -2,8 +2,6 @@ package io.redspace.ironsspellbooks.item.armor;
 
 
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.entity.armor.ArchevokerArmorModel;
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -17,6 +15,6 @@ public class ArchevokerArmorItem extends ImbuableChestplateArmorItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new ArchevokerArmorModel());
+        return ArmorClientRenderers.create(this);
     }
 }

@@ -2,8 +2,6 @@ package io.redspace.ironsspellbooks.item.armor;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
-import io.redspace.ironsspellbooks.entity.armor.PyromancerArmorModel;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -23,6 +21,6 @@ public class PyromancerArmorItem extends ImbuableChestplateArmorItem implements 
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new PyromancerArmorModel());
+        return ArmorClientRenderers.create(this);
     }
 }

@@ -116,7 +116,7 @@ public class ChainCreeperSpell extends AbstractSpell {
             Vec3 spawn = origin.add(motion.multiply(1, 0, 1).normalize().scale(.6f));
             var angle = Utils.rotationFromDirection(motion);
 
-            head.moveTo(spawn.x, spawn.y - head.getBoundingBox().getYsize() / 2, spawn.z, angle.y, angle.x);
+            head.moveTo(spawn.x, spawn.y - head.getBoundingBox().getYsize() * .35f, spawn.z, angle.y, angle.x);
             level.addFreshEntity(head);
         }
     }

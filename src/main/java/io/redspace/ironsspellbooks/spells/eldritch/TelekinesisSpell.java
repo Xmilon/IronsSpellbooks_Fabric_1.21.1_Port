@@ -129,8 +129,8 @@ public class TelekinesisSpell extends AbstractSpell {
                 }
                 if ((playerMagicData.getCastDurationRemaining()) % 10 == 0) {
                     int airborne = (int) (travel.x * travel.x + travel.z * travel.z) / 2;
-                    targetEntity.addEffect(new MobEffectInstance(MobEffectRegistry.AIRBORNE, 31, airborne));
-                    targetEntity.addEffect(new MobEffectInstance(MobEffectRegistry.ANTIGRAVITY, 11, 0));
+                    targetEntity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.AIRBORNE.get()), 31, airborne));
+                    targetEntity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANTIGRAVITY.get()), 11, 0));
                 }
                 var deltaMovement = targetEntity.getDeltaMovement();
                 var newMotion = force.subtract(deltaMovement).scale(0.25).add(deltaMovement);
@@ -162,5 +162,6 @@ public class TelekinesisSpell extends AbstractSpell {
         return SpellAnimations.SELF_CAST_ANIMATION;
     }
 }
+
 
 

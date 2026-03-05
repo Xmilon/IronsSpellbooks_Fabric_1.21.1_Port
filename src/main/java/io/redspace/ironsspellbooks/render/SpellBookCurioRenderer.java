@@ -16,24 +16,24 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.client.ICurioRenderer;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.client.ITrinketRenderer;
 
 @OnlyIn(Dist.CLIENT)
-public class SpellBookCurioRenderer implements ICurioRenderer {
+public class SpellBookCurioRenderer implements ITrinketRenderer {
     ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack itemStack, SlotContext slotContext, PoseStack poseStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack itemStack, TrinketSlotContext TrinketSlotContext, PoseStack poseStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if (renderLayerParent.getModel() instanceof HumanoidModel<?>) {
             var humanoidModel = (HumanoidModel<LivingEntity>) renderLayerParent.getModel();
-            //humanoidModel.setupAnim(slotContext.entity(), limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            //humanoidModel.prepareMobModel(slotContext.entity(), limbSwing, limbSwingAmount, partialTicks);
+            //humanoidModel.setupAnim(TrinketSlotContext.entity(), limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            //humanoidModel.prepareMobModel(TrinketSlotContext.entity(), limbSwing, limbSwingAmount, partialTicks);
 
             poseStack.pushPose();
             humanoidModel.body.translateAndRotate(poseStack);
             //Negative X is right, Negative Z is Forward
             //Scale by 1/16th, we are now dealing with units of pixels
-            poseStack.translate((slotContext.entity() != null && !slotContext.entity().getItemBySlot(EquipmentSlot.CHEST).isEmpty() ? -5.5 : -4.5) * .0625f, 9 * .0625f, 0);
+            poseStack.translate((TrinketSlotContext.entity() != null && !TrinketSlotContext.entity().getItemBySlot(EquipmentSlot.CHEST).isEmpty() ? -5.5 : -4.5) * .0625f, 9 * .0625f, 0);
             //poseStack.mulPose(Vector3f.YP.rotation(Mth.PI * .5f));
             poseStack.mulPose(Axis.YP.rotation(Mth.PI));
             poseStack.mulPose(Axis.ZP.rotation(Mth.PI - 5 * Mth.DEG_TO_RAD));

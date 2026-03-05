@@ -21,7 +21,7 @@ public class CreateDebugWizardCommand {
     public static void register(CommandDispatcher<CommandSourceStack> pDispatcher) {
         pDispatcher.register(Commands.literal("createDebugWizard").requires((commandSourceStack) -> {
             return commandSourceStack.hasPermission(2);
-        }).then(Commands.argument("spell", SpellArgument.spellArgument())
+        }).then(Commands.argument("spell", com.mojang.brigadier.arguments.StringArgumentType.word())
                 .then(Commands.argument("spellLevel", IntegerArgumentType.integer(1))
                         .then(Commands.argument("targetsPlayer", BoolArgumentType.bool())
                                 .then(Commands.argument("cancelAfterTicks", IntegerArgumentType.integer(0))

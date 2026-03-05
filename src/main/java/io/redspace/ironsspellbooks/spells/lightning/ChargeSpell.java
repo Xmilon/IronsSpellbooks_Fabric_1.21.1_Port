@@ -11,6 +11,7 @@ import io.redspace.ironsspellbooks.effect.ChargeEffect;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -64,7 +65,7 @@ public class ChargeSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
 
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.CHARGED, (int) (getSpellPower(spellLevel, entity) * 20), spellLevel - 1, false, false, true));
+        entity.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.CHARGED.get()), (int) (getSpellPower(spellLevel, entity) * 20), spellLevel - 1, false, false, true));
 
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }

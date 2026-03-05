@@ -109,7 +109,7 @@ public class SummonVexSpell extends AbstractSpell {
             int count = getSummonCount(spellLevel, entity);
             for (int i = 0; i < count; i++) {
                 SummonedVex vex = new SummonedVex(world, entity);
-                vex.moveTo(entity.getEyePosition().add(new Vec3(Utils.getRandomScaled(2), 1, Utils.getRandomScaled(2))));
+                vex.moveTo(Utils.getSpellCastStart(entity).add(new Vec3(Utils.getRandomScaled(2), 1, Utils.getRandomScaled(2))));
                 vex.finalizeSpawn((ServerLevel) world, world.getCurrentDifficultyAt(vex.getOnPos()), MobSpawnType.MOB_SUMMONED, null);
                 var creature = NeoForge.EVENT_BUS.post(new SpellSummonEvent<>(entity, vex, this.spellId, spellLevel)).getCreature();
                 world.addFreshEntity(creature);

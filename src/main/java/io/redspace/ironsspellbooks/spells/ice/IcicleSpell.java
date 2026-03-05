@@ -59,7 +59,7 @@ public class IcicleSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         IcicleProjectile icicle = new IcicleProjectile(world, entity);
-        icicle.setPos(entity.position().add(0, entity.getEyeHeight() - icicle.getBoundingBox().getYsize() * .5f, 0));
+        icicle.setPos(Utils.getSpellCastStart(entity).add(0, -icicle.getBoundingBox().getYsize() * .35f, 0));
         icicle.shoot(entity.getLookAngle());
         icicle.setDamage(getDamage(spellLevel, entity));
         icicle.setNoGravity(true);

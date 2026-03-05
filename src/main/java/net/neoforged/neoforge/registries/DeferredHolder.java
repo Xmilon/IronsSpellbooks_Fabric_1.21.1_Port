@@ -135,6 +135,6 @@ public class DeferredHolder<R, T extends R> implements Supplier<T>, Holder<R> {
 
     @Override
     public boolean canSerializeIn(HolderOwner<R> owner) {
-        return resolveReference().map(holder -> holder.canSerializeIn(owner)).orElse(false);
+        return resolveReference().map(holder -> holder.canSerializeIn(owner)).orElse(key != null);
     }
 }

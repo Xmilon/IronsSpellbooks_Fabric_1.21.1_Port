@@ -70,7 +70,7 @@ public class AbyssalShroudSpell extends AbstractSpell {
 
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.ABYSSAL_SHROUD, (int) getSpellPower(spellLevel, entity) * 20, 0, false, false, true));
+        entity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ABYSSAL_SHROUD.get()), (int) getSpellPower(spellLevel, entity) * 20, 0, false, false, true));
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);
     }
 
@@ -79,5 +79,6 @@ public class AbyssalShroudSpell extends AbstractSpell {
         return SpellAnimations.SELF_CAST_ANIMATION;
     }
 }
+
 
 

@@ -1,8 +1,6 @@
 package io.redspace.ironsspellbooks.item.armor;
 
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
-import io.redspace.ironsspellbooks.entity.armor.GoldCrownModel;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -22,6 +20,6 @@ public class GoldCrownArmorItem extends ExtendedArmorItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new GoldCrownModel());
+        return ArmorClientRenderers.create(this);
     }
 }

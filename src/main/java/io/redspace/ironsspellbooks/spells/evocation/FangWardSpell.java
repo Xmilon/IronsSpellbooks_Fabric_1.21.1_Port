@@ -71,7 +71,7 @@ public class FangWardSpell extends AbstractSpell {
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         int rings = getRings(spellLevel, entity);
         int count = 5;
-        Vec3 center = entity.getEyePosition();
+        Vec3 center = Utils.getSpellCastStart(entity);
 
         for (int r = 0; r < rings; r++) {
             float fangs = count + r * r;

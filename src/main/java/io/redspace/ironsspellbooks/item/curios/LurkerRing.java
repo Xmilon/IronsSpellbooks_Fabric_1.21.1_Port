@@ -1,6 +1,6 @@
 package io.redspace.ironsspellbooks.item.curios;
 
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +15,7 @@ public class LurkerRing extends PassiveAbilityCurio {
     public static final float MULTIPLIER = 1.5f;
 
     public LurkerRing() {
-        super(new Properties().stacksTo(1), Curios.RING_SLOT);
+        super(new Properties().stacksTo(1), TrinketsSlots.RING_SLOT);
     }
 
     @Override

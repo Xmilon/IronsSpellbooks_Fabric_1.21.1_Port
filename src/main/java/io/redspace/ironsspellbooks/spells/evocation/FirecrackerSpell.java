@@ -18,6 +18,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -64,7 +66,14 @@ public class FirecrackerSpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         Vec3 shootAngle = entity.getLookAngle().normalize();
-        Vec3 spawn = Utils.raycastForEntity(world, entity, getRange(spellLevel, entity), true).getLocation().subtract(shootAngle.scale(.25f));
+        HitResult hitResult = Utils.raycastForEntity(world, entity, getRange(spellLevel, entity), true);
+        Vec3 spawn = hitResult.getLocation().subtract(shootAngle.scale(.25f));
+        if (hitResult instanceof EntityHitResult entityHitResult) {
+            var target = entityHitResult.getEntity();
+            spawn = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * .15f, 0);
+        } else {
+            spawn = spawn.add(0, .35f, 0);
+        }
         ExtendedFireworkRocket firework = new ExtendedFireworkRocket(world, randomFireworkRocket(), entity, spawn.x, spawn.y, spawn.z, true, getDamage(spellLevel, entity));
         world.addFreshEntity(firework);
         firework.shoot(shootAngle.x, shootAngle.y, shootAngle.z, 0, 0);

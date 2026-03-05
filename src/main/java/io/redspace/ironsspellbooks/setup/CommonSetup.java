@@ -56,6 +56,10 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
 @EventBusSubscriber(modid = IronsSpellbooks.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CommonSetup {
     public static void bootstrapFabric() {
@@ -146,10 +150,38 @@ public class CommonSetup {
                 .add(AttributeRegistry.EVOCATION_SPELL_POWER)
                 .add(AttributeRegistry.NATURE_SPELL_POWER)
                 .add(AttributeRegistry.ELDRITCH_SPELL_POWER);
+        AttributeSupplier supplier = playerAttributes.build();
         try {
-            FabricDefaultAttributeRegistry.register(net.minecraft.world.entity.EntityType.PLAYER, playerAttributes);
+            FabricDefaultAttributeRegistry.register(net.minecraft.world.entity.EntityType.PLAYER, supplier);
         } catch (IllegalStateException ignored) {
-            // Already registered by another path (for example successful PlayerMixin injection).
+            // PLAYER attributes are already registered; force-patch the existing entry for Fabric runtime parity.
+            forcePatchPlayerDefaultAttributes(supplier);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static void forcePatchPlayerDefaultAttributes(AttributeSupplier supplier) {
+        try {
+            Class<?> defaultAttributes = Class.forName("net.minecraft.world.entity.ai.attributes.DefaultAttributes");
+            for (Field field : defaultAttributes.getDeclaredFields()) {
+                if (!Modifier.isStatic(field.getModifiers()) || !Map.class.isAssignableFrom(field.getType())) {
+                    continue;
+                }
+                field.setAccessible(true);
+                Object obj = field.get(null);
+                if (!(obj instanceof Map map)) {
+                    continue;
+                }
+                if (!map.containsKey(net.minecraft.world.entity.EntityType.PLAYER)) {
+                    continue;
+                }
+                map.put(net.minecraft.world.entity.EntityType.PLAYER, supplier);
+                IronsSpellbooks.LOGGER.info("Patched PLAYER default attributes with irons_spellbooks magic attributes.");
+                return;
+            }
+            IronsSpellbooks.LOGGER.warn("Could not locate mutable DefaultAttributes map to patch PLAYER attributes.");
+        } catch (Throwable t) {
+            IronsSpellbooks.LOGGER.error("Failed to patch PLAYER default attributes.", t);
         }
     }
 

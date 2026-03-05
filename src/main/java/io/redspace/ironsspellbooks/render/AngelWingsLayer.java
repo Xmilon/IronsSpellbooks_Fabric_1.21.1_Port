@@ -47,7 +47,9 @@ public class AngelWingsLayer<T extends LivingEntity, M extends EntityModel<T>> e
 
     public boolean shouldRender(T entity) {
         //irons_spellbooks.LOGGER.debug("AngelWingsLayer.shouldRender {} {}", entity.getName().getString(), entity.getActiveEffects().stream().map(x -> x.getEffect().getDisplayName().getString()).collect(Collectors.toSet()));
-        return !entity.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA) && entity.hasEffect(MobEffectRegistry.ANGEL_WINGS);
+        return !entity.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)
+                && entity.hasEffect(MobEffectRegistry.ANGEL_WINGS)
+                && !entity.hasEffect(MobEffectRegistry.TRUE_INVISIBILITY);
     }
 
     public ResourceLocation getAngelWingsTexture(T entity) {

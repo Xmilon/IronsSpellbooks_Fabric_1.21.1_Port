@@ -11,6 +11,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
@@ -48,14 +49,16 @@ public class SchoolType {
      * @return Returns raw resistance attribute value of the entity.
      */
     public double getResistanceFor(LivingEntity livingEntity) {
-        return livingEntity.getAttributes().hasAttribute(resistanceAttribute) ? livingEntity.getAttributeValue(resistanceAttribute) : 1;
+        AttributeInstance instance = livingEntity.getAttribute(resistanceAttribute);
+        return instance != null ? instance.getValue() : 1;
     }
 
     /**
      * @return Returns raw power attribute value of the entity.
      */
     public double getPowerFor(LivingEntity livingEntity) {
-        return livingEntity.getAttributes().hasAttribute(powerAttribute) ? livingEntity.getAttributeValue(powerAttribute) : 1;
+        AttributeInstance instance = livingEntity.getAttribute(powerAttribute);
+        return instance != null ? instance.getValue() : 1;
 
     }
 

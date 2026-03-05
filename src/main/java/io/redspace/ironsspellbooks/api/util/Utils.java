@@ -10,7 +10,7 @@ import io.redspace.ironsspellbooks.api.magic.SpellSelectionManager;
 import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
@@ -75,9 +75,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.SlotResult;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,6 +90,7 @@ import static io.redspace.ironsspellbooks.api.registry.AttributeRegistry.COOLDOW
 public class Utils {
 
     public static final RandomSource random = RandomSource.createThreadSafe();
+    public static final double SPELL_CAST_START_Y_OFFSET = 0.12;
 
     public static final Predicate<Holder<Attribute>> ONLY_MAGIC_ATTRIBUTES = (attribute) -> attribute.value() instanceof IMagicAttribute;
     public static final Predicate<Holder<Attribute>> NON_BASE_ATTRIBUTES = (attribute) -> !(attribute == Attributes.ENTITY_INTERACTION_RANGE || attribute == Attributes.ATTACK_DAMAGE || attribute == Attributes.ATTACK_SPEED || attribute == Attributes.ATTACK_KNOCKBACK);
@@ -162,10 +163,24 @@ public class Utils {
 
     @Nullable
     public static ItemStack getPlayerSpellbookStack(@NotNull Player player) {
-        var curiosSpellbook = CuriosApi.getCuriosInventory(player)
-                .map(curios -> curios.findCurios(stack -> stack.getItem() instanceof SpellBook).stream()
-                        .filter(result -> Curios.SPELLBOOK_SLOT.equals(result.slotContext().identifier()))
-                        .map(SlotResult::stack)
+        var equippedSpellbook = getPlayerEquippedSpellbookStack(player);
+        if (equippedSpellbook != null && !equippedSpellbook.isEmpty()) {
+            return equippedSpellbook;
+        }
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.getItem() instanceof SpellBook) {
+                return stack;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static ItemStack getPlayerEquippedSpellbookStack(@NotNull Player player) {
+        var curiosSpellbook = TrinketsApi.getTrinketsInventory(player)
+                .map(curios -> curios.findTrinkets(stack -> stack.getItem() instanceof SpellBook).stream()
+                        .filter(result -> TrinketsSlots.SPELLBOOK_SLOT.equals(result.slotContext().identifier()))
+                        .map(TrinketSlotResult::stack)
                         .filter(stack -> !stack.isEmpty())
                         .findFirst()
                         .orElse(null))
@@ -179,23 +194,18 @@ public class Utils {
         if (player.getMainHandItem().getItem() instanceof SpellBook) {
             return player.getMainHandItem();
         }
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof SpellBook) {
-                return stack;
-            }
-        }
         return null;
     }
 
     public static void setPlayerSpellbookStack(@NotNull Player player, ItemStack itemStack) {
         boolean[] equippedByCurio = {false};
-        CuriosApi.getCuriosInventory(player).ifPresent(curios -> {
-            var spellbookSlot = curios.findCurios(stack -> true).stream()
-                    .map(SlotResult::slotContext)
-                    .filter(context -> Curios.SPELLBOOK_SLOT.equals(context.identifier()))
+        TrinketsApi.getTrinketsInventory(player).ifPresent(curios -> {
+            var spellbookSlot = curios.findTrinkets(stack -> true).stream()
+                    .map(TrinketSlotResult::slotContext)
+                    .filter(context -> TrinketsSlots.SPELLBOOK_SLOT.equals(context.identifier()))
                     .findFirst();
             if (spellbookSlot.isPresent()) {
-                curios.setEquippedCurio(Curios.SPELLBOOK_SLOT, spellbookSlot.get().index(), itemStack);
+                curios.setEquippedTrinket(TrinketsSlots.SPELLBOOK_SLOT, spellbookSlot.get().index(), itemStack);
                 equippedByCurio[0] = true;
             }
         });
@@ -281,7 +291,7 @@ public class Utils {
 
     public static BlockHitResult getTargetBlock(Level level, LivingEntity entity, ClipContext.Fluid clipContext, double reach) {
         var rotation = entity.getLookAngle().normalize().scale(reach);
-        var pos = entity.getEyePosition();
+        var pos = getSpellCastStart(entity);
         var dest = rotation.add(pos);
         return level.clip(new ClipContext(pos, dest, ClipContext.Block.COLLIDER, clipContext, entity));
     }
@@ -323,22 +333,27 @@ public class Utils {
     }
 
     public static Vec3 getPositionFromEntityLookDirection(Entity originEntity, float distance) {
-        Vec3 start = originEntity.getEyePosition();
+        Vec3 start = getSpellCastStart(originEntity);
         return originEntity.getLookAngle().normalize().scale(distance).add(start);
     }
 
     public static HitResult raycastForEntity(Level level, Entity originEntity, float distance, boolean checkForBlocks) {
-        Vec3 start = originEntity.getEyePosition();
+        Vec3 start = getSpellCastStart(originEntity);
         Vec3 end = originEntity.getLookAngle().normalize().scale(distance).add(start);
 
         return raycastForEntity(level, originEntity, start, end, checkForBlocks);
     }
 
     public static HitResult raycastForEntity(Level level, Entity originEntity, float distance, boolean checkForBlocks, float bbInflation) {
-        Vec3 start = originEntity.getEyePosition();
+        Vec3 start = getSpellCastStart(originEntity);
         Vec3 end = originEntity.getLookAngle().normalize().scale(distance).add(start);
 
         return internalRaycastForEntity(level, originEntity, start, end, checkForBlocks, bbInflation, Utils::canHitWithRaycast);
+    }
+
+    public static Vec3 getSpellCastStart(Entity entity) {
+        // Aim from slightly above eye level so server-side raycasts and projectile starts feel centered on chest/head.
+        return entity.getEyePosition().add(0, SPELL_CAST_START_Y_OFFSET, 0);
     }
 
     public static HitResult raycastForEntity(Level level, Entity originEntity, Vec3 start, Vec3 end, boolean checkForBlocks) {

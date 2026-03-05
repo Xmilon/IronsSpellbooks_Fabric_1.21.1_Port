@@ -90,7 +90,7 @@ public class EldritchBlastSpell extends AbstractSpell {
         }
 
         var hitResult = Utils.raycastForEntity(level, entity, getRange(spellLevel, entity), true, .15f);
-        level.addFreshEntity(new EldritchBlastVisualEntity(level, entity.getEyePosition().subtract(0, .75f, 0), hitResult.getLocation(), entity));
+        level.addFreshEntity(new EldritchBlastVisualEntity(level, Utils.getSpellCastStart(entity).subtract(0, .75f, 0), hitResult.getLocation(), entity));
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             Entity target = ((EntityHitResult) hitResult).getEntity();
             if (target.canBeHitByProjectile()) {

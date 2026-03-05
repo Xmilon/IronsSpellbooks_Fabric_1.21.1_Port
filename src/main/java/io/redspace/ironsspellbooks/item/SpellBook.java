@@ -6,7 +6,7 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.IPresetSpellContainer;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.api.util.Utils;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.item.curios.CurioBaseItem;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
@@ -30,8 +30,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurio;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.ITrinket;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +53,7 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
     }
 
     public SpellBook withAttribute(Holder<Attribute> attribute, double value) {
-        return (SpellBook) withAttributes(Curios.SPELLBOOK_SLOT, new AttributeContainer(attribute, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        return (SpellBook) withAttributes(TrinketsSlots.SPELLBOOK_SLOT, new AttributeContainer(attribute, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
     }
 
     public int getMaxSpellSlots() {
@@ -61,7 +61,7 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
     }
 
 
-    public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
+    public boolean canEquipFromUse(TrinketSlotContext TrinketSlotContext, ItemStack stack) {
         return true;
     }
 
@@ -92,7 +92,7 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
                     if (equippedSpellbook != null &&
                             Utils.isSameItemSameComponentsIgnoreDurability(equippedSpellbook, itemStack) &&
                             option != null &&
-                            option.slot.equals(Curios.SPELLBOOK_SLOT) &&
+                            option.slot.equals(TrinketsSlots.SPELLBOOK_SLOT) &&
                             option.slotIndex == i) {
                         var shiftMessage = TooltipsUtils.formatActiveSpellTooltip(itemStack, spellSelectionManager.getSelectedSpellData(), CastSource.SPELLBOOK, (LocalPlayer) player);
                         shiftMessage.remove(0); // remove buffering empty line
@@ -107,13 +107,16 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
                 }
             }
         }
+        if (player != null) {
+            lines.addAll(TooltipsUtils.formatSpellbookStatsTooltip(itemStack, player));
+        }
         super.appendHoverText(itemStack, context, lines, flag);
     }
 
     @NotNull
     @Override
-    public ICurio.SoundInfo getEquipSound(SlotContext slotContext, ItemStack stack) {
-        return new ICurio.SoundInfo(SoundRegistry.EQUIP_SPELL_BOOK.get(), 1.0f, 1.0f);
+    public ITrinket.SoundInfo getEquipSound(TrinketSlotContext TrinketSlotContext, ItemStack stack) {
+        return new ITrinket.SoundInfo(SoundRegistry.EQUIP_SPELL_BOOK.get(), 1.0f, 1.0f);
     }
 
     @Override

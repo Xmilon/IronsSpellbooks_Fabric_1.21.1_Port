@@ -1,7 +1,7 @@
 package io.redspace.ironsspellbooks.item.curios;
 
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.render.CinderousRarity;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +14,7 @@ public class BetrayerSignetRingItem extends PassiveAbilityCurio {
     public static final int COOLDOWN_IN_TICKS = 5 * 20;
 
     public BetrayerSignetRingItem() {
-        super(new Properties().stacksTo(1).rarity(CinderousRarity.CINDEROUS_RARITY_PROXY.getValue()).fireResistant(), Curios.RING_SLOT);
+        super(new Properties().stacksTo(1).rarity(CinderousRarity.CINDEROUS_RARITY_PROXY.getValue()).fireResistant(), TrinketsSlots.RING_SLOT);
         this.showHeader = false; // prevent generative header since we have attributes
     }
 

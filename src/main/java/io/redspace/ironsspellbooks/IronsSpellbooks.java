@@ -64,6 +64,7 @@ public class IronsSpellbooks implements ModInitializer {
         PoiTypeRegistry.register(eventBus);
         FluidRegistry.register(eventBus);
         RecipeRegistry.register(eventBus);
+        CommandRegistry.bootstrapFabric();
 
         CommonSetup.bootstrapFabric();
         SpellConfigManager.INSTANCE = new SpellConfigManager();
@@ -79,7 +80,6 @@ public class IronsSpellbooks implements ModInitializer {
         return ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, path);
     }
 }
-
 
 
 

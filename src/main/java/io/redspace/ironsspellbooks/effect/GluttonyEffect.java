@@ -30,7 +30,7 @@ public class GluttonyEffect extends MagicMobEffect {
                     var pmg = MagicData.getPlayerMagicData(entity);
                     pmg.addMana(food.nutrition() * ratioForAmplifier(gluttony.getAmplifier()));
                     if (entity instanceof ServerPlayer serverPlayer) {
-                        PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(pmg));
+                        PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(pmg, serverPlayer));
                     }
                 }
             }

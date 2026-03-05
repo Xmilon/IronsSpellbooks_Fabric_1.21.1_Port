@@ -1,7 +1,5 @@
 package io.redspace.ironsspellbooks.item.armor;
 
-import io.redspace.ironsspellbooks.entity.armor.GenericCustomArmorRenderer;
-import io.redspace.ironsspellbooks.entity.armor.WanderingMagicianModel;
 import io.redspace.ironsspellbooks.registries.ArmorMaterialRegistry;
 import net.minecraft.world.item.ArmorItem;
 import net.neoforged.api.distmarker.Dist;
@@ -16,6 +14,6 @@ public class WanderingMagicianArmorItem extends ExtendedArmorItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
-        return new GenericCustomArmorRenderer<>(new WanderingMagicianModel());
+        return ArmorClientRenderers.create(this);
     }
 }

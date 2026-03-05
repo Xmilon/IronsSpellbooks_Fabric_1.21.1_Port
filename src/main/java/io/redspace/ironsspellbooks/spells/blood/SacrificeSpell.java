@@ -87,7 +87,7 @@ public class SacrificeSpell extends AbstractSpell {
     public boolean checkPreCastConditions(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
         float aimAssist = .25f;
         float range = 25f;
-        Vec3 start = entity.getEyePosition();
+        Vec3 start = Utils.getSpellCastStart(entity);
         Vec3 end = entity.getLookAngle().normalize().scale(range).add(start);
         var target = Utils.raycastForEntity(entity.level(), entity, start, end, true, aimAssist, (e) -> e instanceof IMagicSummon summon && summon.getSummoner() == entity);
         if (target instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity livingTarget) {

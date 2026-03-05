@@ -28,6 +28,7 @@ public class ClientMagicData {
      * Current Player's Synced Data
      */
     private static final MagicData playerMagicData = new MagicData();
+    private static int syncedMaxMana = -1;
     private static final Set<UUID> activeSummons = new HashSet<>();
 
     /**
@@ -125,8 +126,16 @@ public class ClientMagicData {
         return (int) playerMagicData.getMana();
     }
 
-    public static void setMana(int playerMana) {
-        ClientMagicData.playerMagicData.setMana(playerMana);
+    public static int getSyncedMaxMana() {
+        return syncedMaxMana;
+    }
+
+    public static void setSyncedMaxMana(int maxMana) {
+        syncedMaxMana = maxMana;
+    }
+
+    public static void setMana(float playerMana) {
+        ClientMagicData.playerMagicData.setSyncedMana(playerMana);
     }
 
     public static CastType getCastType() {

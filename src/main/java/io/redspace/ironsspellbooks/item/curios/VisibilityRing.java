@@ -1,21 +1,21 @@
 package io.redspace.ironsspellbooks.item.curios;
 
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.util.ItemPropertiesHelper;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
-import top.theillusivec4.curios.api.SlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
 
 public class VisibilityRing extends SimpleDescriptiveCurio {
     public VisibilityRing() {
-        super(ItemPropertiesHelper.equipment().stacksTo(1), Curios.RING_SLOT);
+        super(ItemPropertiesHelper.equipment().stacksTo(1), TrinketsSlots.RING_SLOT);
     }
 
 
-    public void curioTick(SlotContext slotContext, ItemStack stack) {
-        super.curioTick(slotContext, stack);
-        slotContext.entity().removeEffect(MobEffects.BLINDNESS);
-        slotContext.entity().removeEffect(MobEffects.DARKNESS);
+    public void trinketTick(TrinketSlotContext TrinketSlotContext, ItemStack stack) {
+        super.trinketTick(TrinketSlotContext, stack);
+        TrinketSlotContext.entity().removeEffect(MobEffects.BLINDNESS);
+        TrinketSlotContext.entity().removeEffect(MobEffects.DARKNESS);
     }
 
 }

@@ -130,7 +130,8 @@ public class ArmorCapeLayer extends RenderLayer<LivingEntity, HumanoidModel<Livi
         return !itemstack.is(Items.ELYTRA)
                 && itemstack.getItem() instanceof IArmorCapeProvider
                 && !hasPlayerCape(livingEntity)
-                && !livingEntity.hasEffect(MobEffectRegistry.ANGEL_WINGS);
+                && !livingEntity.hasEffect(MobEffectRegistry.ANGEL_WINGS)
+                && !livingEntity.hasEffect(MobEffectRegistry.TRUE_INVISIBILITY);
     }
 
     private boolean hasPlayerCape(LivingEntity livingEntity) {

@@ -3,7 +3,7 @@ package io.redspace.ironsspellbooks.gui.overlays;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
-import io.redspace.ironsspellbooks.compat.Curios;
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.player.ClientRenderCache;
@@ -88,9 +88,9 @@ public class SpellBarOverlay implements LayeredDraw.Layer {
         int configOffsetX = ClientConfigs.SPELL_BAR_X_OFFSET.get();
         Anchor anchor = ClientConfigs.SPELL_BAR_ANCHOR.get();
         if (anchor == Anchor.Hotbar) {
-            // Vanilla-like position, pushed to left side of the screen.
-            centerX = 64;
-            centerY = screenHeight - 34;
+            // Align from the first hotbar slot and shift right to stay clear of chat.
+            centerX = (screenWidth / 2 - 91) - 120;
+            centerY = screenHeight - 45;
         } else {
             centerX = screenWidth * anchor.m1;
             centerY = screenHeight * anchor.m2;
@@ -118,7 +118,7 @@ public class SpellBarOverlay implements LayeredDraw.Layer {
         //Border + Cooldowns
         for (int i = 0; i < locations.size(); i++) {
             if (i != selectedSpellIndex) {
-                guiHelper.blit(TEXTURE, centerX + (int) locations.get(i).x, centerY + (int) locations.get(i).y, 22 + (!ssm.getAllSpells().get(i).slot.equals(Curios.SPELLBOOK_SLOT) ? 110 : 0), 84, 22, 22);
+                guiHelper.blit(TEXTURE, centerX + (int) locations.get(i).x, centerY + (int) locations.get(i).y, 22 + (!ssm.getAllSpells().get(i).slot.equals(TrinketsSlots.SPELLBOOK_SLOT) ? 110 : 0), 84, 22, 22);
             }
             float f = ClientMagicData.getCooldownPercent(spells.get(i).getSpell());
             if (f > 0) {

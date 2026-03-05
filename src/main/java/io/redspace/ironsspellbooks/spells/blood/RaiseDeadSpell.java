@@ -125,10 +125,10 @@ public class RaiseDeadSpell extends AbstractSpell {
                 undead.finalizeSpawn((ServerLevel) world, world.getCurrentDifficultyAt(undead.getOnPos()), MobSpawnType.MOB_SUMMONED, null);
                 equip(undead, equipment);
                 var yrot = 6.281f / count * i + entity.getYRot() * Mth.DEG_TO_RAD;
-                Vec3 spawn = Utils.moveToRelativeGroundLevel(world, entity.getEyePosition().add(new Vec3(radius * Mth.cos(yrot), 0, radius * Mth.sin(yrot))), 10);
-                spawn = world.clip(new ClipContext(entity.getEyePosition(), spawn, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty())).getLocation();
+                Vec3 spawn = Utils.moveToRelativeGroundLevel(world, Utils.getSpellCastStart(entity).add(new Vec3(radius * Mth.cos(yrot), 0, radius * Mth.sin(yrot))), 10);
+                spawn = world.clip(new ClipContext(Utils.getSpellCastStart(entity), spawn, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty())).getLocation();
                 if (!world.noCollision(undead.getBoundingBox().move(spawn))) {
-                    spawn = Utils.moveToRelativeGroundLevel(world, spawn.add(entity.getEyePosition().subtract(spawn).normalize().scale(entity.getBbWidth() * 1.1)), 3);
+                    spawn = Utils.moveToRelativeGroundLevel(world, spawn.add(Utils.getSpellCastStart(entity).subtract(spawn).normalize().scale(entity.getBbWidth() * 1.1)), 3);
                 }
                 undead.setPos(spawn.x, spawn.y, spawn.z);
                 undead.setYRot(entity.getYRot());

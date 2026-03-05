@@ -70,7 +70,7 @@ public class FlamingBarrageSpell extends AbstractSpell {
         if (!recasts.hasRecastForSpell(getSpellId())) {
             recasts.addRecast(new RecastInstance(getSpellId(), spellLevel, getRecastCount(spellLevel, entity), 120, castSource, null), playerMagicData);
         }
-        Vec3 origin = entity.getEyePosition().add(entity.getForward().normalize().scale(.2f)).subtract(0, 0.15, 0);
+        Vec3 origin = Utils.getSpellCastStart(entity).add(entity.getForward().normalize().scale(.2f)).subtract(0, 0.15, 0);
         SmallMagicFireball fireball = new SmallMagicFireball(level, entity);
         fireball.setPos(origin.subtract(0, fireball.getBbHeight(), 0));
         var inaccuracy = 0.4f;

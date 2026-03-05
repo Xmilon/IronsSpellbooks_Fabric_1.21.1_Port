@@ -7,7 +7,6 @@
   "mixins": [
     "Compat$apothic_attributes$AttributeHandler",
     "CreeperMixin",
-    "CurioHooksMixin",
     "DispenserBlockMixin",
     "EntityAccessor",
     "EntityMixin",

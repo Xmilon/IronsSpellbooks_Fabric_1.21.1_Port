@@ -51,9 +51,9 @@ public class ImmolateEffect extends MagicMobEffect implements ISyncedMobEffect {
         MobEffectInstance previous = entity.getEffect(MobEffectRegistry.IMMOLATE);
         MobEffectInstance inst;
         if (previous != null) {
-            inst = new MobEffectInstance(MobEffectRegistry.IMMOLATE, 20 * 15, previous.getAmplifier() + 1, previous.isAmbient(), previous.isVisible(), previous.showIcon());
+            inst = new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.IMMOLATE.get()), 20 * 15, previous.getAmplifier() + 1, previous.isAmbient(), previous.isVisible(), previous.showIcon());
         } else {
-            inst = new MobEffectInstance(MobEffectRegistry.IMMOLATE, 20 * 15, 0, false, false, true);
+            inst = new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.IMMOLATE.get()), 20 * 15, 0, false, false, true);
         }
         if (afflicter != null) {
             EFFECT_CREDIT.put(entity, afflicter);
@@ -133,6 +133,7 @@ public class ImmolateEffect extends MagicMobEffect implements ISyncedMobEffect {
         return amplifier >= STACKS_REQUIRED_AMPLIFIER;
     }
 }
+
 
 
 

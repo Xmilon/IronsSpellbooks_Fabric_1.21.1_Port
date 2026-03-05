@@ -23,7 +23,7 @@ public class AffinityRing extends CurioBaseItem {
         var affinity = AffinityData.getAffinityData(pStack);
         if (affinity != AffinityData.NONE && !affinity.affinityData().isEmpty()) {
             tooltip.add(Component.empty());
-            tooltip.add(Component.translatable("curios.modifiers.ring").withStyle(ChatFormatting.GOLD));
+            tooltip.add(Component.translatable("TrinketsSlots.modifiers.ring").withStyle(ChatFormatting.GOLD));
             tooltip.addAll(affinity.getDescriptionComponent());
         } else {
             tooltip.add(Component.translatable("tooltip.irons_spellbooks.empty_affinity_ring").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));

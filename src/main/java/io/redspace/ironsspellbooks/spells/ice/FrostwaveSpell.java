@@ -84,7 +84,7 @@ public class FrostwaveSpell extends AbstractSpell {
                         && Utils.hasLineOfSight(level, entity, target, true))
                 .forEach(target -> {
             if (target instanceof LivingEntity livingEntity && livingEntity.distanceToSqr(entity) < radius * radius) {
-                livingEntity.addEffect(new MobEffectInstance(MobEffectRegistry.CHILLED, getDuration(spellLevel, entity)));
+                livingEntity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.CHILLED.get()), getDuration(spellLevel, entity)));
                 MagicManager.spawnParticles(level, ParticleHelper.SNOWFLAKE, livingEntity.getX(), livingEntity.getY() + livingEntity.getBbHeight() * .5f, livingEntity.getZ(), 50, livingEntity.getBbWidth() * .5f, livingEntity.getBbHeight() * .5f, livingEntity.getBbWidth() * .5f, .03, false);
             }
         });
@@ -109,5 +109,6 @@ public class FrostwaveSpell extends AbstractSpell {
         return SpellAnimations.TOUCH_GROUND_ANIMATION;
     }
 }
+
 
 

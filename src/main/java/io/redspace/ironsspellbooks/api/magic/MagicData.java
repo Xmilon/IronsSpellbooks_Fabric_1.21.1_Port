@@ -66,11 +66,18 @@ public class MagicData {
             this.mana = e.getNewMana();
         }
         if (this.serverPlayer != null) {
-            float maxMana = (float) AttributeRegistry.getValueOrDefault(serverPlayer, AttributeRegistry.MAX_MANA, 100.0D);
+            float maxMana = (float) AttributeRegistry.getMaxManaWithFallback(serverPlayer);
             if (this.mana > maxMana) {
                 this.mana = maxMana;
             }
         }
+    }
+
+    /**
+     * Client sync path: trust server-sent value and avoid local attribute clamping.
+     */
+    public void setSyncedMana(float mana) {
+        this.mana = mana;
     }
 
     public void addMana(float mana) {
@@ -259,6 +266,16 @@ public class MagicData {
             }
             return new MagicData(entity instanceof net.minecraft.world.entity.Mob);
         });
+    }
+
+    public void copyFrom(MagicData oldData, HolderLookup.Provider provider, boolean wasDeath) {
+        CompoundTag tag = new CompoundTag();
+        oldData.saveNBTData(tag, provider);
+        this.loadNBTData(tag, provider);
+
+        if (wasDeath && this.serverPlayer != null) {
+            this.setSyncedData(oldData.getSyncedData().getPersistentData(this.serverPlayer));
+        }
     }
 
     public void saveNBTData(CompoundTag compound, HolderLookup.Provider provider) {

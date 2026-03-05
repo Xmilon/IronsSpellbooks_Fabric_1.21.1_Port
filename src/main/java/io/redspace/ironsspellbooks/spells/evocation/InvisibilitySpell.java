@@ -65,7 +65,7 @@ public class InvisibilitySpell extends AbstractSpell {
     @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
 
-        entity.addEffect(new MobEffectInstance(MobEffectRegistry.TRUE_INVISIBILITY, getDuration(spellLevel, entity), 0, false, false, true));
+        entity.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.TRUE_INVISIBILITY.get()), getDuration(spellLevel, entity), 0, false, false, true));
 
 
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);
@@ -76,5 +76,6 @@ public class InvisibilitySpell extends AbstractSpell {
     }
 
 }
+
 
 

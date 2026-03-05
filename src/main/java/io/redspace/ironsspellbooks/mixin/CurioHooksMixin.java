@@ -1,5 +1,6 @@
 package io.redspace.ironsspellbooks.mixin;
 
+import io.redspace.ironsspellbooks.compat.TrinketsSlots;
 import io.redspace.ironsspellbooks.util.ModTags;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,11 +14,16 @@ import top.theillusivec4.curios.mixin.CuriosImplMixinHooks;
 public class CurioHooksMixin {
 
     @Inject(method = "isStackValid", at = @At("HEAD"), cancellable = true)
-    private static void killGenericCurio(SlotContext slotContext, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (slotContext.identifier().equals("curio")) {
-            if (stack.is(ModTags.SPELLBOOK_CURIO)) {
-                cir.setReturnValue(false);
-            }
+    private static void allowSpellbookSlots(SlotContext slotContext, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (!stack.is(ModTags.SPELLBOOK_CURIO)) {
+            return;
+        }
+
+        String identifier = slotContext.identifier();
+        if (identifier.equals(TrinketsSlots.SPELLBOOK_SLOT)
+                || identifier.equals("spellbook/spellbook")
+                || identifier.endsWith("spellbook")) {
+            cir.setReturnValue(true);
         }
     }
 }

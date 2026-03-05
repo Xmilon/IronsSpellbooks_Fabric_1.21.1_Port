@@ -49,7 +49,7 @@ public class CreateImbuedSwordCommand {
         pDispatcher.register(Commands.literal("createImbuedSword").requires((commandSourceStack) -> {
             return commandSourceStack.hasPermission(2);
         }).then(Commands.argument("item", ItemArgument.item(context)).suggests(SWORD_SUGGESTIONS)
-                .then(Commands.argument("spell", SpellArgument.spellArgument())
+                .then(Commands.argument("spell", com.mojang.brigadier.arguments.StringArgumentType.word())
                         .then(Commands.argument("level", IntegerArgumentType.integer(1)).executes((ctx) -> {
                             return createImbuedSword(ctx.getSource(), ctx.getArgument("item", ItemInput.class), ctx.getArgument("spell", String.class), IntegerArgumentType.getInteger(ctx, "level"));
                         })))));

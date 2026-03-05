@@ -72,7 +72,7 @@ public class IceSpikesSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         Vec3 forward = entity.getForward().multiply(1, 0, 1).normalize();
-        Vec3 start = entity.getEyePosition().add(forward.scale(1.5));
+        Vec3 start = Utils.getSpellCastStart(entity).add(forward.scale(1.5));
 
         float damage = getDamage(spellLevel, entity);
         float minScale = 1f;

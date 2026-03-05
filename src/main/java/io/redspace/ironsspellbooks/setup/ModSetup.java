@@ -9,6 +9,8 @@ import io.redspace.ironsspellbooks.data.IronsDataStorage;
 import io.redspace.ironsspellbooks.effect.guiding_bolt.GuidingBoltManager;
 import io.redspace.ironsspellbooks.network.SyncManaPacket;
 import io.redspace.ironsspellbooks.worldgen.IceSpiderPatrolSpawner;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -70,14 +72,21 @@ public class ModSetup {
         // Sync player-side spell/mana state and spell config when a player joins.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (handler.getPlayer() instanceof ServerPlayer serverPlayer) {
-                var magicData = MagicData.getPlayerMagicData(serverPlayer);
-                magicData.getSyncedData().syncToPlayer(serverPlayer);
-                magicData.getPlayerCooldowns().syncToPlayer(serverPlayer);
-                magicData.getPlayerRecasts().syncAllToPlayer();
-                PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData));
+                syncPlayerMagicState(serverPlayer);
                 SpellConfigManager.onDatapackSync(new OnDatapackSyncEvent(server.getPlayerList(), serverPlayer));
             }
         });
+
+        // Preserve and resync player magic state across respawn/death.
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+            MagicData.getPlayerMagicData(newPlayer).copyFrom(
+                    MagicData.getPlayerMagicData(oldPlayer),
+                    newPlayer.registryAccess(),
+                    !alive
+            );
+        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> syncPlayerMagicState(newPlayer));
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> syncPlayerMagicState(player));
 
         // Persist summons on server stop.
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> SummonManager.onServerStopping(new ServerStoppingEvent(server)));
@@ -94,5 +103,13 @@ public class ModSetup {
             io.redspace.ironsspellbooks.IronsSpellbooks.OVERWORLD = null;
         });
 
+    }
+
+    private static void syncPlayerMagicState(ServerPlayer serverPlayer) {
+        var magicData = MagicData.getPlayerMagicData(serverPlayer);
+        magicData.getSyncedData().syncToPlayer(serverPlayer);
+        magicData.getPlayerCooldowns().syncToPlayer(serverPlayer);
+        magicData.getPlayerRecasts().syncAllToPlayer();
+        PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData, serverPlayer));
     }
 }

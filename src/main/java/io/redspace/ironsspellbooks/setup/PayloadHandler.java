@@ -29,6 +29,7 @@ public class PayloadHandler {
         payloadRegistrar.playToClient(SyncCameraShakePacket.TYPE, SyncCameraShakePacket.STREAM_CODEC, SyncCameraShakePacket::handle);
         payloadRegistrar.playToClient(SyncAllCameraShakesPacket.TYPE, SyncAllCameraShakesPacket.STREAM_CODEC, SyncAllCameraShakesPacket::handle);
         payloadRegistrar.playToClient(SyncManaPacket.TYPE, SyncManaPacket.STREAM_CODEC, SyncManaPacket::handle);
+        payloadRegistrar.playToClient(CauldronVisualSyncPacket.TYPE, CauldronVisualSyncPacket.STREAM_CODEC, CauldronVisualSyncPacket::handle);
 
         payloadRegistrar.playToServer(ScrollForgeSelectSpellPacket.TYPE, ScrollForgeSelectSpellPacket.STREAM_CODEC, ScrollForgeSelectSpellPacket::handle);
         payloadRegistrar.playToClient(SyncJsonConfigPacket.TYPE, SyncJsonConfigPacket.STREAM_CODEC, SyncJsonConfigPacket::handle);
@@ -75,5 +76,4 @@ public class PayloadHandler {
         payloadRegistrar.playToServer(SelectSpellPacket.TYPE, SelectSpellPacket.STREAM_CODEC, SelectSpellPacket::handle);
     }
 }
-
 

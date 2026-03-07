@@ -14,7 +14,9 @@ import io.redspace.ironsspellbooks.recipe_types.alchemist_cauldron.FillAlchemist
 import io.redspace.ironsspellbooks.registries.BlockRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.registries.RecipeRegistry;
+import io.redspace.ironsspellbooks.setup.Messages;
 import io.redspace.ironsspellbooks.util.ModTags;
+import io.redspace.ironsspellbooks.network.CauldronVisualSyncPacket;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -45,6 +47,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
@@ -541,6 +544,8 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
         super.setChanged();
         if (level != null && !level.isClientSide) {
             needsClientSync = true;
+            // Push block-entity data updates immediately for client-side visuals.
+            flushClientSync();
         }
     }
 
@@ -560,6 +565,12 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
         if (level instanceof ServerLevel serverLevel) {
             // Ensure block entity data packets are pushed to tracking clients.
             serverLevel.getChunkSource().blockChanged(worldPosition);
+            // Send an explicit cauldron-state payload for client visual consistency.
+            CompoundTag syncTag = getUpdateTag(serverLevel.registryAccess());
+            var payload = new CauldronVisualSyncPacket(worldPosition, syncTag);
+            for (var player : PlayerLookup.tracking(serverLevel, worldPosition)) {
+                Messages.sendToPlayer(payload, player);
+            }
         }
     }
 
@@ -591,15 +602,13 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
 
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         handleUpdateTag(pkt.getTag(), lookupProvider);
-        if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-        }
+        forceClientVisualRefresh();
     }
 
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         if (level != null) {
             handleUpdateTag(pkt.getTag(), level.registryAccess());
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+            forceClientVisualRefresh();
         }
     }
 
@@ -626,12 +635,23 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
         if (tag != null) {
             loadAdditional(tag, lookupProvider);
         }
+        forceClientVisualRefresh();
     }
 
     public void handleUpdateTag(CompoundTag tag) {
         if (level != null) {
             handleUpdateTag(tag, level.registryAccess());
         }
+    }
+
+    private void forceClientVisualRefresh() {
+        if (level == null || !level.isClientSide) {
+            return;
+        }
+        var state = getBlockState();
+        // Force chunk render invalidation for this block so visual layers refresh immediately.
+        level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
+        level.setBlocksDirty(worldPosition, state, state);
     }
 
     public void drops() {

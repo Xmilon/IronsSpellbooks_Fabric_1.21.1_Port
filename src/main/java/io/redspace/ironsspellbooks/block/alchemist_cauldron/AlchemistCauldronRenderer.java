@@ -52,10 +52,10 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
     public void render(AlchemistCauldronTile cauldron, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         int waterLevel = cauldron.getFluidAmount();
 
-        float waterOffset = Mth.lerp(waterLevel / 1000f, .25f, .9f);
+        float waterOffset = heightForAmount(waterLevel);
 
         if (waterLevel > 0) {
-            renderWater(cauldron, poseStack, bufferSource, packedLight, waterOffset);
+            renderWater(cauldron, poseStack, bufferSource, packedLight);
         }
 
         var floatingItems = cauldron.inputItems;
@@ -116,13 +116,22 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
 
     }
 
-    private void renderWater(AlchemistCauldronTile cauldron, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float waterOffset) {
+    private void renderWater(AlchemistCauldronTile cauldron, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         Matrix4f pose = poseStack.last().pose();
         float totalFluid = Mth.clamp(cauldron.getFluidAmount(), 0, 1000);
-        float runningFluid = totalFluid;
-        float f = 0;
+        if (totalFluid <= 0) {
+            return;
+        }
+        float minHeight = .25f;
+        float maxHeight = .9f;
+        float cumulativeFluid = 0;
+        float zFightOffset = 0;
         float padding = 1 / 16f;
         for (FluidStack fluid : cauldron.fluidInventory.fluids()) {
+            cumulativeFluid = Math.min(totalFluid, cumulativeFluid + fluid.getAmount());
+            float layerHeight = heightForAmount(cumulativeFluid) + zFightOffset;
+            zFightOffset += 0.0005f;
+
             int skylight = packedLight >> 4 & 15;
             int luminosity = Math.max(skylight, fluid.getFluidType().getLightLevel(fluid));
             int fluidlight = packedLight & 0xF00000 | luminosity << 4;
@@ -139,18 +148,21 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
                 tint = 0x8A1118;
             }
             var rgb = colorFromLong(tint);
-            float opacity = runningFluid / totalFluid; // creates naturally weighted sum for the opacity of proceeding layers
-            runningFluid -= fluid.getAmount();
+            float opacity = 0.9f;
             float u0 = texture.getU0();
             float u1 = texture.getU1();
             float v0 = texture.getV0();
             float v1 = texture.getV1();
-            consumer.addVertex(pose, 1 - padding, waterOffset + f, 0 + padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u1, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 0 + padding, waterOffset + f, 0 + padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u0, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 0 + padding, waterOffset + f, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u0, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
-            consumer.addVertex(pose, 1 - padding, waterOffset + f, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u1, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
-            f += 0.001f;
+            consumer.addVertex(pose, 1 - padding, layerHeight, 0 + padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u1, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
+            consumer.addVertex(pose, 0 + padding, layerHeight, 0 + padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u0, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
+            consumer.addVertex(pose, 0 + padding, layerHeight, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u0, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
+            consumer.addVertex(pose, 1 - padding, layerHeight, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u1, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
         }
+    }
+
+    private float heightForAmount(float amount) {
+        int level = Mth.clamp(Mth.ceil(amount / 250f), 0, 4);
+        return Mth.lerp(level / 4f, .25f, .9f);
     }
 
     private Vector3f colorFromLong(long color) {

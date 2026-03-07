@@ -2,6 +2,7 @@ package io.redspace.ironsspellbooks.api.spells;
 
 import io.redspace.ironsspellbooks.capabilities.magic.SpellContainer;
 import io.redspace.ironsspellbooks.registries.ComponentRegistry;
+import io.redspace.ironsspellbooks.util.ScrollSchoolTag;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,7 @@ public interface ISpellContainer {
         spellContainer.addSpellAtIndex(spell, spellLevel, 0, true);
         var i = spellContainer.toImmutable();
         ISpellContainer.set(itemStack, i);
+        ScrollSchoolTag.setSchool(itemStack, spell.getSchoolType());
         return i;
     }
 

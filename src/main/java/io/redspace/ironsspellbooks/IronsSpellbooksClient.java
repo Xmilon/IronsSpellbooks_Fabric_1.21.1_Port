@@ -15,13 +15,11 @@ import io.redspace.ironsspellbooks.player.ClientPlayerEvents;
 import io.redspace.ironsspellbooks.player.KeyMappings;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
-import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.registries.BlockRegistry;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.registries.MenuRegistry;
 import io.redspace.ironsspellbooks.registries.ParticleRegistry;
-import io.redspace.ironsspellbooks.render.ScrollModel;
 import io.redspace.ironsspellbooks.render.animation.AnimationHelper;
 import io.redspace.ironsspellbooks.setup.ClientMessages;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
@@ -45,7 +43,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -79,16 +76,7 @@ public class IronsSpellbooksClient implements ClientModInitializer {
     }
 
     private static void registerModelLoadingPlugins() {
-        ModelLoadingPlugin.register(context -> {
-            SchoolRegistry.REGISTRY.forEach(school -> context.addModels(ScrollModel.getScrollModelLocation(school)));
-            context.modifyModelAfterBake().register((model, modifyContext) -> {
-                var scrollModelKey = ModelResourceLocation.inventory(IronsSpellbooks.id("scroll"));
-                if (scrollModelKey.equals(modifyContext.topLevelId())) {
-                    return new ScrollModel(model);
-                }
-                return model;
-            });
-        });
+        ModelLoadingPlugin.register(context -> { });
     }
 
     private static void registerKeyMappingsAndInputTick() {

@@ -178,15 +178,14 @@ public class FabricDatagenEntrypoint implements DataGeneratorEntrypoint {
 
             JsonArray overrides = new JsonArray();
             var schools = ScrollSchoolModels.schoolOrder();
-            for (int idx = schools.size() - 1; idx >= 0; idx--) {
-                String school = schools.get(idx);
+            for (String school : schools) {
                 float predicateValue = ScrollSchoolModels.predicateValueForSchool(school);
                 if (predicateValue <= 0f) {
                     continue;
                 }
                 JsonObject override = new JsonObject();
                 JsonObject predicate = new JsonObject();
-                predicate.addProperty("irons_spellbooks:scroll_school", predicateValue);
+                predicate.addProperty("custom_model_data", predicateValue);
                 override.add("predicate", predicate);
                 override.addProperty("model", "irons_spellbooks:item/scroll_" + school);
                 overrides.add(override);

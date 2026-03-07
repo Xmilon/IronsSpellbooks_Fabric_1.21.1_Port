@@ -1,9 +1,9 @@
 {
+  "replace": false,
   "entities": [
     "minecraft:player"
   ],
   "slots": [
-    "ring/ring",
-    "spellbook/spellbook"
+    "spellbook"
   ]
 }

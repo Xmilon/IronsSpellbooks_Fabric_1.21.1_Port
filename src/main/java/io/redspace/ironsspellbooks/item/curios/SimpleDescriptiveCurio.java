@@ -35,7 +35,7 @@ public class SimpleDescriptiveCurio extends CurioBaseItem {
         var descriptionLines = getDescriptionLines(stack);
         if (needHeader && !descriptionLines.isEmpty()) {
             attrTooltip.add(Component.empty());
-            attrTooltip.add(Component.translatable("TrinketsSlots.modifiers." + slotIdentifier).withStyle(ChatFormatting.GOLD));
+            attrTooltip.add(Component.translatable("curios.modifiers." + slotIdentifier).withStyle(ChatFormatting.GOLD));
         }
         attrTooltip.addAll(descriptionLines);
 

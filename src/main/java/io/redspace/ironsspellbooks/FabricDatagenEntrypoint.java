@@ -2,6 +2,7 @@ package io.redspace.ironsspellbooks;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.redspace.ironsspellbooks.util.ScrollSchoolModels;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -18,6 +19,7 @@ public class FabricDatagenEntrypoint implements DataGeneratorEntrypoint {
         var pack = generator.createPack();
         pack.addProvider(MithrilLootTablesProvider::new);
         pack.addProvider(MithrilWorldgenProvider::new);
+        pack.addProvider(ScrollItemModelProvider::new);
     }
 
     private static class MithrilLootTablesProvider implements DataProvider {
@@ -146,6 +148,51 @@ public class FabricDatagenEntrypoint implements DataGeneratorEntrypoint {
             target.add("state", state);
 
             return target;
+        }
+    }
+
+    private static class ScrollItemModelProvider implements DataProvider {
+        private final PackOutput.PathProvider itemModelPathProvider;
+
+        private ScrollItemModelProvider(FabricDataOutput output) {
+            this.itemModelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models/item");
+        }
+
+        @Override
+        public CompletableFuture<?> run(CachedOutput cachedOutput) {
+            return DataProvider.saveStable(cachedOutput, scrollModel(), itemModelPathProvider.json(ResourceLocation.parse("irons_spellbooks:scroll")));
+        }
+
+        @Override
+        public String getName() {
+            return "Iron's Spellbooks Scroll Item Models";
+        }
+
+        private static JsonObject scrollModel() {
+            JsonObject root = new JsonObject();
+            root.addProperty("parent", "item/generated");
+
+            JsonObject textures = new JsonObject();
+            textures.addProperty("layer0", "irons_spellbooks:item/scroll");
+            root.add("textures", textures);
+
+            JsonArray overrides = new JsonArray();
+            var schools = ScrollSchoolModels.schoolOrder();
+            for (int idx = schools.size() - 1; idx >= 0; idx--) {
+                String school = schools.get(idx);
+                float predicateValue = ScrollSchoolModels.predicateValueForSchool(school);
+                if (predicateValue <= 0f) {
+                    continue;
+                }
+                JsonObject override = new JsonObject();
+                JsonObject predicate = new JsonObject();
+                predicate.addProperty("irons_spellbooks:scroll_school", predicateValue);
+                override.add("predicate", predicate);
+                override.addProperty("model", "irons_spellbooks:item/scroll_" + school);
+                overrides.add(override);
+            }
+            root.add("overrides", overrides);
+            return root;
         }
     }
 }

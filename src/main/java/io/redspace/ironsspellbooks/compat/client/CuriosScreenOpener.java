@@ -27,10 +27,10 @@ public final class CuriosScreenOpener {
         if (tryInvokeStaticWithMinecraft("dev.emi.trinkets.client.TrinketScreenManager", minecraft, "open", "openScreen", "openTrinketScreen")) {
             return true;
         }
-        if (tryInvokeStaticNoArgs("io.wispforest.accessories.client.AccessoriesClient", "openAccessoriesScreen", "openScreen")) {
+        if (tryInvokeStaticNoArgs("io.wispforest.accessories.client.AccessoriesClient", "attemptToOpenScreen", "openAccessoriesScreen", "openScreen")) {
             return true;
         }
-        if (tryInvokeStaticWithMinecraft("io.wispforest.accessories.client.AccessoriesClient", minecraft, "openAccessoriesScreen", "openScreen")) {
+        if (tryInvokeStaticWithMinecraft("io.wispforest.accessories.client.AccessoriesClient", minecraft, "attemptToOpenScreen", "openAccessoriesScreen", "openScreen")) {
             return true;
         }
 

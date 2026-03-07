@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 
 public class TrinketsApi {
     private static final TrinketsHelper HELPER = new TrinketsHelper();
+    private static final boolean ACCESSORIES_LOADED = FabricLoader.getInstance().isModLoaded("accessories");
     private static final boolean TRINKETS_LOADED = FabricLoader.getInstance().isModLoaded("trinkets");
 
     public static Optional<ITrinketsItemHandler> getTrinketsInventory(LivingEntity entity) {
@@ -130,10 +131,75 @@ public class TrinketsApi {
         }
 
         private List<TrinketEntry> scanTrinkets() {
-            if (!(entity instanceof Player player) || !TRINKETS_LOADED) {
+            if (!(entity instanceof Player player)) {
+                return List.of();
+            }
+            List<TrinketEntry> accessoriesEntries = scanAccessories(player);
+            if (!accessoriesEntries.isEmpty()) {
+                return accessoriesEntries;
+            }
+            if (!TRINKETS_LOADED) {
                 return List.of();
             }
             return scanNativeTrinkets(player);
+        }
+
+        private List<TrinketEntry> scanAccessories(Player player) {
+            if (!ACCESSORIES_LOADED) {
+                return List.of();
+            }
+            try {
+                Class<?> accessoriesCapabilityClass = Class.forName("io.wispforest.accessories.api.AccessoriesCapability");
+                Method getOptionally = accessoriesCapabilityClass.getMethod("getOptionally", LivingEntity.class);
+                Object capabilityResult = getOptionally.invoke(null, player);
+                if (!(capabilityResult instanceof Optional<?> optionalCapability) || optionalCapability.isEmpty()) {
+                    return List.of();
+                }
+
+                Object capability = optionalCapability.get();
+                Method getContainers = capability.getClass().getMethod("getContainers");
+                Object containersObj = getContainers.invoke(capability);
+                if (!(containersObj instanceof Map<?, ?> containers)) {
+                    return List.of();
+                }
+
+                var entries = new java.util.ArrayList<TrinketEntry>();
+                for (Map.Entry<?, ?> entry : containers.entrySet()) {
+                    String slotName = String.valueOf(entry.getKey());
+                    String slotId = mapAccessorySlot(slotName);
+                    if (slotId == null) {
+                        continue;
+                    }
+
+                    Object container = entry.getValue();
+                    int size = invokeNoArgsInt(container, "getSize", 0);
+                    if (size <= 0) {
+                        continue;
+                    }
+
+                    Object accessoryInventory = invokeNoArgs(container, "getAccessories");
+                    if (accessoryInventory == null) {
+                        continue;
+                    }
+
+                    for (int index = 0; index < size; index++) {
+                        ItemStack stack = getInventoryStack(accessoryInventory, index);
+                        String resolvedSlotId = slotId;
+                        if (resolvedSlotId == null && !stack.isEmpty()) {
+                            resolvedSlotId = inferSlotId(stack);
+                        }
+                        if (resolvedSlotId == null) {
+                            continue;
+                        }
+                        TrinketSlotContext TrinketSlotContext = new TrinketSlotContext(resolvedSlotId, entity, index, false, true);
+                        Consumer<ItemStack> writer = createTrinketWriter(accessoryInventory, index);
+                        entries.add(new TrinketEntry(index, stack, TrinketSlotContext, writer));
+                    }
+                }
+                return entries;
+            } catch (Throwable ignored) {
+                return List.of();
+            }
         }
 
         private List<TrinketEntry> scanNativeTrinkets(Player player) {
@@ -192,6 +258,28 @@ public class TrinketsApi {
 
         private static Consumer<ItemStack> createTrinketWriter(Object trinketInventory, int index) {
             return stack -> setInventoryStack(trinketInventory, index, stack);
+        }
+
+        private static Object invokeNoArgs(Object target, String methodName) {
+            try {
+                Method method = target.getClass().getMethod(methodName);
+                return method.invoke(target);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+                return null;
+            }
+        }
+
+        private static <T> T invokeNoArgsTyped(Object target, String methodName, Class<T> expected) {
+            Object result = invokeNoArgs(target, methodName);
+            if (expected.isInstance(result)) {
+                return expected.cast(result);
+            }
+            return null;
+        }
+
+        private static int invokeNoArgsInt(Object target, String methodName, int fallback) {
+            Object result = invokeNoArgs(target, methodName);
+            return result instanceof Number n ? n.intValue() : fallback;
         }
 
         private static int getInventorySize(Object inventory) {
@@ -263,6 +351,25 @@ public class TrinketsApi {
             }
             if (normalized.contains("necklace") || normalized.contains("charm") || normalized.contains("amulet")) {
                 return TrinketsSlots.NECKLACE_SLOT;
+            }
+            return null;
+        }
+
+        private static String mapAccessorySlot(String slotName) {
+            String normalized = slotName == null ? "" : slotName.toLowerCase();
+            if (normalized.contains("spellbook")) {
+                return TrinketsSlots.SPELLBOOK_SLOT;
+            }
+            if (normalized.contains("ring")) {
+                return TrinketsSlots.RING_SLOT;
+            }
+            if (normalized.contains("necklace") || normalized.contains("charm") || normalized.contains("amulet")) {
+                return TrinketsSlots.NECKLACE_SLOT;
+            }
+            if (TrinketsSlots.SPELLBOOK_SLOT.equals(normalized)
+                    || TrinketsSlots.RING_SLOT.equals(normalized)
+                    || TrinketsSlots.NECKLACE_SLOT.equals(normalized)) {
+                return normalized;
             }
             return null;
         }

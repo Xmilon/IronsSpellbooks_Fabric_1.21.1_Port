@@ -45,8 +45,7 @@ public final class CreativeTabRegistry {
             () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 1)
                     .icon(() -> new ItemStack(ItemRegistry.IRON_SPELL_BOOK.get()))
                     .title(Component.translatable("itemGroup.irons_spellbooks.spell_equipment_tab"))
-                    .displayItems((parameters, output) -> sortedItems().stream()
-                            .filter(CreativeTabRegistry::isEquipmentItem)
+                    .displayItems((parameters, output) -> sortedEquipmentItems().stream()
                             .forEach(output::accept))
                     .build());
 
@@ -88,6 +87,63 @@ public final class CreativeTabRegistry {
                 .map(holder -> (Item) holder.get())
                 .sorted(Comparator.comparing(item -> BuiltInRegistries.ITEM.getKey(item).toString()))
                 .toList();
+    }
+
+    private static List<Item> sortedEquipmentItems() {
+        return sortedItems().stream()
+                .filter(CreativeTabRegistry::isEquipmentItem)
+                .sorted(CreativeTabRegistry::compareEquipmentItems)
+                .toList();
+    }
+
+    private static int compareEquipmentItems(Item left, Item right) {
+        var leftArmor = left instanceof ArmorItem;
+        var rightArmor = right instanceof ArmorItem;
+
+        if (leftArmor && rightArmor) {
+            var leftPath = BuiltInRegistries.ITEM.getKey(left).getPath();
+            var rightPath = BuiltInRegistries.ITEM.getKey(right).getPath();
+
+            int setCompare = normalizeArmorSetName(leftPath).compareTo(normalizeArmorSetName(rightPath));
+            if (setCompare != 0) {
+                return setCompare;
+            }
+
+            int slotCompare = Integer.compare(getArmorSlotOrder((ArmorItem) left), getArmorSlotOrder((ArmorItem) right));
+            if (slotCompare != 0) {
+                return slotCompare;
+            }
+
+            return leftPath.compareTo(rightPath);
+        }
+
+        if (leftArmor != rightArmor) {
+            return leftArmor ? -1 : 1;
+        }
+
+        return BuiltInRegistries.ITEM.getKey(left).toString().compareTo(BuiltInRegistries.ITEM.getKey(right).toString());
+    }
+
+    private static int getArmorSlotOrder(ArmorItem armorItem) {
+        return switch (armorItem.getType()) {
+            case BOOTS -> 0;
+            case LEGGINGS -> 1;
+            case CHESTPLATE -> 2;
+            case HELMET -> 3;
+            default -> 4;
+        };
+    }
+
+    private static String normalizeArmorSetName(String path) {
+        String normalized = path;
+        boolean changed = true;
+        while (changed) {
+            String next = normalized
+                    .replaceAll("(_boots|_boot|_leggings|_pants|_chestplate|_chest|_helmet|_hood|_hat)$", "");
+            changed = !next.equals(normalized);
+            normalized = next;
+        }
+        return normalized;
     }
 
     private static boolean isSpellbookOrScrollItem(Item item) {

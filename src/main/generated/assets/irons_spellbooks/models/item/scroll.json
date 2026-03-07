@@ -1,62 +1,62 @@
 {
   "parent": "item/generated",
-  "textures": {
-    "layer0": "irons_spellbooks:item/scroll"
-  },
   "overrides": [
     {
+      "model": "irons_spellbooks:item/scroll_nature",
       "predicate": {
         "irons_spellbooks:scroll_school": 9.0
-      },
-      "model": "irons_spellbooks:item/scroll_nature"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_lightning",
       "predicate": {
         "irons_spellbooks:scroll_school": 8.0
-      },
-      "model": "irons_spellbooks:item/scroll_lightning"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_ice",
       "predicate": {
         "irons_spellbooks:scroll_school": 7.0
-      },
-      "model": "irons_spellbooks:item/scroll_ice"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_holy",
       "predicate": {
         "irons_spellbooks:scroll_school": 6.0
-      },
-      "model": "irons_spellbooks:item/scroll_holy"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_fire",
       "predicate": {
         "irons_spellbooks:scroll_school": 5.0
-      },
-      "model": "irons_spellbooks:item/scroll_fire"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_evocation",
       "predicate": {
         "irons_spellbooks:scroll_school": 4.0
-      },
-      "model": "irons_spellbooks:item/scroll_evocation"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_ender",
       "predicate": {
         "irons_spellbooks:scroll_school": 3.0
-      },
-      "model": "irons_spellbooks:item/scroll_ender"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_eldritch",
       "predicate": {
         "irons_spellbooks:scroll_school": 2.0
-      },
-      "model": "irons_spellbooks:item/scroll_eldritch"
+      }
     },
     {
+      "model": "irons_spellbooks:item/scroll_blood",
       "predicate": {
         "irons_spellbooks:scroll_school": 1.0
-      },
-      "model": "irons_spellbooks:item/scroll_blood"
+      }
     }
-  ]
+  ],
+  "textures": {
+    "layer0": "irons_spellbooks:item/scroll"
+  }
 }

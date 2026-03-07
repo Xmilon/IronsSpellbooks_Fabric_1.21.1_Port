@@ -158,7 +158,7 @@ public class TooltipsUtils {
 
         List<Component> lines = new ArrayList<>();
         lines.add(Component.empty());
-        lines.add(Component.translatable("TrinketsSlots.modifiers.spellbook").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.translatable("curios.modifiers.spellbook").withStyle(ChatFormatting.GRAY));
         modifiers.entries().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().value().getDescriptionId()))
                 .forEach(entry -> {
@@ -198,7 +198,7 @@ public class TooltipsUtils {
 
         List<Component> lines = new ArrayList<>();
         lines.add(Component.empty());
-        lines.add(Component.translatable("TrinketsSlots.modifiers." + slotId).withStyle(ChatFormatting.GRAY));
+        lines.add(Component.translatable("curios.modifiers." + slotId).withStyle(ChatFormatting.GRAY));
         modifiers.entries().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().value().getDescriptionId()))
                 .forEach(entry -> {

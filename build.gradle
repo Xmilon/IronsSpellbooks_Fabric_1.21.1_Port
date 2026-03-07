@@ -40,6 +40,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	modImplementation "software.bernie.geckolib:geckolib-fabric-1.21:4.5.8"
 	modImplementation "dev.kosmx.player-anim:player-animation-lib-fabric:2.0.4+1.21.1"
+	modRuntimeOnly fileTree(dir: "libs", include: ["*.jar"])
 	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 	compileOnly "com.electronwill.night-config:core:3.8.1"
 	compileOnly "com.electronwill.night-config:toml:3.8.1"

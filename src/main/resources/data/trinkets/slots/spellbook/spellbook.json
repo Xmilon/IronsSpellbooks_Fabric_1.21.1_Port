@@ -1,8 +1,0 @@
-{
-  "icon": "irons_spellbooks:gui/slots/spellbook",
-  "order": 500,
-  "amount": 1,
-  "validator_predicates": [
-    "trinkets:tag"
-  ]
-}

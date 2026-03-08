@@ -52,10 +52,10 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
     public void render(AlchemistCauldronTile cauldron, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         int waterLevel = cauldron.getFluidAmount();
 
-        float waterOffset = heightForAmount(waterLevel);
+        float waterOffset = Mth.lerp(Mth.clamp(waterLevel, 0, 1000) / 1000f, .25f, .9f);
 
         if (waterLevel > 0) {
-            renderWater(cauldron, poseStack, bufferSource, packedLight);
+            renderWater(cauldron, poseStack, bufferSource, packedLight, waterOffset);
         }
 
         var floatingItems = cauldron.inputItems;
@@ -116,20 +116,17 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
 
     }
 
-    private void renderWater(AlchemistCauldronTile cauldron, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    private void renderWater(AlchemistCauldronTile cauldron, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float waterOffset) {
         Matrix4f pose = poseStack.last().pose();
         float totalFluid = Mth.clamp(cauldron.getFluidAmount(), 0, 1000);
         if (totalFluid <= 0) {
             return;
         }
-        float minHeight = .25f;
-        float maxHeight = .9f;
-        float cumulativeFluid = 0;
+        float runningFluid = totalFluid;
         float zFightOffset = 0;
         float padding = 1 / 16f;
         for (FluidStack fluid : cauldron.fluidInventory.fluids()) {
-            cumulativeFluid = Math.min(totalFluid, cumulativeFluid + fluid.getAmount());
-            float layerHeight = heightForAmount(cumulativeFluid) + zFightOffset;
+            float layerHeight = waterOffset + zFightOffset;
             zFightOffset += 0.0005f;
 
             int skylight = packedLight >> 4 & 15;
@@ -148,7 +145,8 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
                 tint = 0x8A1118;
             }
             var rgb = colorFromLong(tint);
-            float opacity = 0.9f;
+            float opacity = runningFluid / totalFluid;
+            runningFluid -= fluid.getAmount();
             float u0 = texture.getU0();
             float u1 = texture.getU1();
             float v0 = texture.getV0();
@@ -158,11 +156,6 @@ public class AlchemistCauldronRenderer implements BlockEntityRenderer<AlchemistC
             consumer.addVertex(pose, 0 + padding, layerHeight, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u0, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
             consumer.addVertex(pose, 1 - padding, layerHeight, 1 - padding).setColor(rgb.x(), rgb.y(), rgb.z(), opacity).setUv(u1, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(fluidlight).setNormal(0, 1, 0);
         }
-    }
-
-    private float heightForAmount(float amount) {
-        int level = Mth.clamp(Mth.ceil(amount / 250f), 0, 4);
-        return Mth.lerp(level / 4f, .25f, .9f);
     }
 
     private Vector3f colorFromLong(long color) {

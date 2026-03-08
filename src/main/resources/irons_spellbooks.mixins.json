@@ -29,6 +29,7 @@
     "ClientEntityMixin",
     "EntityRendererMixin",
     "GuiMixin",
+    "ItemRendererMixin",
     "LivingEntityRendererMixin",
     "LecternRendererMixin",
     "MinecraftMixin",

@@ -1,3 +1,9 @@
 {
-    "parent":  "irons_spellbooks:item/copper_spell_book_model"
+  "parent": "irons_spellbooks:item/template_spell_book_model",
+  "textures": {
+    "book": "irons_spellbooks:item/spell_book_models/copper_spell_book",
+    "particle": "irons_spellbooks:item/spell_book_models/copper_spell_book"
+  }
 }
+
+

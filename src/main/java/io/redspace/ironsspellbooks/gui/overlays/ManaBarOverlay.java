@@ -1,26 +1,18 @@
 package io.redspace.ironsspellbooks.gui.overlays;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
-import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
 import io.redspace.ironsspellbooks.item.CastingItem;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-
-import static io.redspace.ironsspellbooks.api.registry.AttributeRegistry.MAX_MANA;
 
 public class ManaBarOverlay implements LayeredDraw.Layer {
     public static final ManaBarOverlay instance = new ManaBarOverlay();
@@ -119,43 +111,7 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
 
     private static int getPlayerMaxMana(Player player) {
         int fromSynced = ClientMagicData.getSyncedMaxMana();
-        int fromAttributes = (int) AttributeRegistry.getValueOrDefault(player, MAX_MANA, 100.0D);
-        int fromEquipment = getFallbackMaxManaFromEquipment(player);
-        return Math.max(Math.max(fromSynced, fromAttributes), fromEquipment);
-    }
-
-    private static int getFallbackMaxManaFromEquipment(Player player) {
-        double base = 100.0;
-        double additive = 0.0;
-        double multipliedBase = 0.0;
-        double multipliedTotal = 0.0;
-
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
-                continue;
-            }
-            ItemStack stack = player.getItemBySlot(slot);
-            if (stack.isEmpty()) {
-                continue;
-            }
-            ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-            for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
-                if (entry.attribute().value() != MAX_MANA.get()) {
-                    continue;
-                }
-                if (entry.slot() != EquipmentSlotGroup.bySlot(slot)) {
-                    continue;
-                }
-                switch (entry.modifier().operation()) {
-                    case ADD_VALUE -> additive += entry.modifier().amount();
-                    case ADD_MULTIPLIED_BASE -> multipliedBase += entry.modifier().amount();
-                    case ADD_MULTIPLIED_TOTAL -> multipliedTotal += entry.modifier().amount();
-                }
-            }
-        }
-
-        double total = (base + additive) * (1.0 + multipliedBase) * (1.0 + multipliedTotal);
-        return (int) Math.max(100, Math.round(total));
+        return fromSynced > 0 ? fromSynced : 100;
     }
 
     private static int getBarX(Anchor anchor, int screenWidth) {

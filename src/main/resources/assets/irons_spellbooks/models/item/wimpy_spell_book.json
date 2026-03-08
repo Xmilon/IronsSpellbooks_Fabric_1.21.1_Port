@@ -1,6 +1,8 @@
 {
-  "parent": "item/generated",
+  "parent": "irons_spellbooks:item/template_spell_book_model",
   "textures": {
-    "layer0": "irons_spellbooks:item/temp_spellbook"
+    "book": "irons_spellbooks:item/wimpy_spell_book",
+    "particle": "irons_spellbooks:item/wimpy_spell_book"
   }
 }
+

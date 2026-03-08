@@ -20,6 +20,7 @@ import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.registries.MenuRegistry;
 import io.redspace.ironsspellbooks.registries.ParticleRegistry;
+import io.redspace.ironsspellbooks.network.CauldronVisualSyncPacket;
 import io.redspace.ironsspellbooks.render.animation.AnimationHelper;
 import io.redspace.ironsspellbooks.setup.ClientMessages;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
@@ -44,6 +45,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -54,6 +56,7 @@ import java.util.Set;
 
 public class IronsSpellbooksClient implements ClientModInitializer {
     private static final Set<EntityType<?>> REGISTERED_RENDERERS = new HashSet<>();
+
     @Override
     public void onInitializeClient() {
         MinecraftInstanceHelper.instance = () -> Minecraft.getInstance().player;
@@ -76,7 +79,19 @@ public class IronsSpellbooksClient implements ClientModInitializer {
     }
 
     private static void registerModelLoadingPlugins() {
-        ModelLoadingPlugin.register(context -> { });
+        ModelLoadingPlugin.register(context -> {
+            var itemRegistry = Minecraft.getInstance().level != null
+                    ? Minecraft.getInstance().level.registryAccess().registryOrThrow(Registries.ITEM)
+                    : BuiltInRegistries.ITEM;
+            for (var item : itemRegistry) {
+                if (item instanceof io.redspace.ironsspellbooks.item.SpellBook) {
+                    ResourceLocation id = itemRegistry.getKey(item);
+                    if (id != null && IronsSpellbooks.MODID.equals(id.getNamespace())) {
+                        context.addModels(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_flat"));
+                    }
+                }
+            }
+        });
     }
 
     private static void registerKeyMappingsAndInputTick() {
@@ -88,6 +103,7 @@ public class IronsSpellbooksClient implements ClientModInitializer {
             KeyBindingHelper.registerKeyBinding(quickCast);
         }
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            CauldronVisualSyncPacket.flushPending();
             ClientInputEvents.onClientTick(new net.neoforged.neoforge.client.event.ClientTickEvent.Post());
             if (client.player != null) {
                 ClientPlayerEvents.onPlayerTick(new net.neoforged.neoforge.event.tick.PlayerTickEvent.Pre(client.player));

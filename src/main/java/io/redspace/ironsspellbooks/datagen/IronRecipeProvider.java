@@ -99,7 +99,7 @@ public class IronRecipeProvider extends RecipeProvider {
                 .withReturnItem(Items.BUCKET)
                 .withFluid(new FluidStack(Fluids.WATER, 1000))
                 .withSound(SoundEvents.BUCKET_EMPTY)
-                .mustFitAll(false)
+                .mustFitAll(true)
                 .save(recipeOutput);
         new EmptyAlchemistCauldronRecipe.Builder()
                 .withInput(Items.BUCKET)

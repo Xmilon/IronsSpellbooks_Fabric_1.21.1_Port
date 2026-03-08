@@ -386,6 +386,7 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
 
     public ItemInteractionResult handleUse(BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
+        boolean isBucketInteraction = itemStack.is(Items.WATER_BUCKET) || itemStack.is(Items.BUCKET);
         if (!level.isClientSide) {
             ItemStack recipeResult = tryExecuteRecipeInteractions(level, itemStack);
             if (!recipeResult.isEmpty()) {
@@ -393,6 +394,13 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
                 flushClientSync();
                 return ItemInteractionResult.sidedSuccess(false);
             }
+            if (isBucketInteraction) {
+                // Do not pass through to default bucket behavior; keep interaction bound to cauldron.
+                return ItemInteractionResult.sidedSuccess(false);
+            }
+        }
+        if (isBucketInteraction) {
+            return ItemInteractionResult.sidedSuccess(true);
         }
         // item inputting
         if (isValidInput(itemStack)) {
@@ -581,6 +589,11 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
 
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider registryAccess) {
+        // Make NBT application idempotent: packet replays/double-delivery must not stack fluid amount.
+        for (int i = 0; i < this.inputItems.size(); i++) {
+            this.inputItems.set(i, ItemStack.EMPTY);
+        }
+        fluidInventory.clear();
         Utils.loadAllItems(tag, this.inputItems, "Items", registryAccess);
         fluidInventory.load("Results", tag, registryAccess);
         super.loadAdditional(tag, registryAccess);

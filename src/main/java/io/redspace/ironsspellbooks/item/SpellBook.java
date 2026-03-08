@@ -15,6 +15,7 @@ import io.redspace.ironsspellbooks.render.RenderHelper;
 import io.redspace.ironsspellbooks.util.ItemPropertiesHelper;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
 import io.redspace.ironsspellbooks.util.TooltipsUtils;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -30,14 +31,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
 import io.redspace.ironsspellbooks.compat.trinkets.ITrinket;
 
+import java.util.function.Consumer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpellContainer, ILecternPlaceable {
+public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpellContainer, ILecternPlaceable, GeoItem {
     protected final int maxSpellSlots;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SpellBook() {
         this(1);
@@ -50,6 +58,7 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
     public SpellBook(int maxSpellSlots, Item.Properties pProperties) {
         super(pProperties);
         this.maxSpellSlots = maxSpellSlots;
+        GeoItem.registerSyncedAnimatable(this);
     }
 
     public SpellBook withAttribute(Holder<Attribute> attribute, double value) {
@@ -158,5 +167,23 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
             }).toList();
         }
         return List.of(Component.translatable("ui.irons_spellbooks.empty_spellbook_lectern").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        if (FabricLoader.getInstance().getEnvironmentType() != net.fabricmc.api.EnvType.CLIENT) {
+            return;
+        }
+
+        SpellBookClientHooks.createGeoRenderer(consumer);
     }
 }

@@ -4,13 +4,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
-import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
 import io.redspace.ironsspellbooks.effect.IMobEffectEndCallback;
 import io.redspace.ironsspellbooks.effect.ISyncedMobEffect;
 import io.redspace.ironsspellbooks.entity.mobs.IMagicSummon;
-import io.redspace.ironsspellbooks.network.SyncManaPacket;
 import io.redspace.ironsspellbooks.registries.ComponentRegistry;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
 import net.minecraft.core.Holder;
@@ -18,7 +16,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -38,7 +35,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
 import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.Map;
@@ -172,19 +168,16 @@ public abstract class LivingEntityMixin {
 
         Multimap<Holder<Attribute>, AttributeModifier> nextModifiers = HashMultimap.create();
         TrinketsApi.getTrinketsInventory(player).ifPresent(curios -> {
-            for (var result : curios.findTrinkets(stack -> !stack.isEmpty())) {
+            for (var result : curios.findTrinkets(stack -> true)) {
                 var stack = result.stack();
+                var TrinketSlotContext = result.slotContext();
+                if (stack.isEmpty()) {
+                    continue;
+                }
                 if (!(stack.getItem() instanceof ITrinketItem curioItem)) {
                     continue;
                 }
 
-                var TrinketSlotContext = result.slotContext();
-                String slotId = TrinketSlotContext.identifier();
-                if (!(io.redspace.ironsspellbooks.compat.TrinketsSlots.SPELLBOOK_SLOT.equals(slotId)
-                        || io.redspace.ironsspellbooks.compat.TrinketsSlots.RING_SLOT.equals(slotId)
-                        || io.redspace.ironsspellbooks.compat.TrinketsSlots.NECKLACE_SLOT.equals(slotId))) {
-                    continue;
-                }
                 var itemModifiers = curioItem.getAttributeModifiers(TrinketSlotContext, IronsSpellbooks.id("equipped_curio_" + TrinketSlotContext.identifier() + "_" + TrinketSlotContext.index()), stack);
                 if (!itemModifiers.isEmpty()) {
                     // Client players can occasionally miss custom attribute instances during init.
@@ -208,15 +201,7 @@ public abstract class LivingEntityMixin {
         if (!nextModifiers.isEmpty()) {
             self.getAttributes().addTransientAttributeModifiers(nextModifiers);
         }
-        boolean curioModifiersChanged = previousModifiers == null ? !nextModifiers.isEmpty() : !previousModifiers.equals(nextModifiers);
         irons_spellbooks$curioAttributeCache.put(self, ImmutableMultimap.copyOf(nextModifiers));
-
-        if (curioModifiersChanged && self instanceof ServerPlayer serverPlayer) {
-            // Curio/accessory modifier changes can alter max mana; clamp and sync immediately.
-            MagicData magicData = MagicData.getPlayerMagicData(serverPlayer);
-            magicData.setMana(magicData.getMana());
-            PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData, serverPlayer));
-        }
     }
 
 }

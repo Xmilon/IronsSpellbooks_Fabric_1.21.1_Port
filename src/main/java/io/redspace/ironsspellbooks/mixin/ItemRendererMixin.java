@@ -4,7 +4,6 @@ import io.redspace.ironsspellbooks.item.SpellBook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,7 @@ public class ItemRendererMixin {
         }
         ResourceLocation flatId = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), itemId.getPath() + "_flat");
         BakedModel flatModel = modelManager.getModel(ModelResourceLocation.inventory(flatId));
-        BakedModel missingModel = modelManager.getModel(ModelBakery.MISSING_MODEL_LOCATION);
+        BakedModel missingModel = modelManager.getMissingModel();
         return flatModel != null && flatModel != missingModel ? flatModel : model;
     }
 }

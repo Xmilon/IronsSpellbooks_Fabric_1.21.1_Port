@@ -1,0 +1,13 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.spell_book.idle": {
+      "loop": true,
+      "bones": {
+        "book": {
+          "rotation": [0, 0, 0]
+        }
+      }
+    }
+  }
+}

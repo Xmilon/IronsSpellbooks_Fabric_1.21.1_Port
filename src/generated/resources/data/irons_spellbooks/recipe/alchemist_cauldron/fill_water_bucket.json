@@ -7,7 +7,7 @@
   "input": {
     "item": "minecraft:water_bucket"
   },
-  "mustFitAll": false,
+  "mustFitAll": true,
   "result": {
     "count": 1,
     "id": "minecraft:bucket"

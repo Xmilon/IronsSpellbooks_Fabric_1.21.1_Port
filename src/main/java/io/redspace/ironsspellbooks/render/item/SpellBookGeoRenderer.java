@@ -15,6 +15,8 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class SpellBookGeoRenderer extends GeoItemRenderer<SpellBook> {
     private static final ResourceLocation DEFAULT_TEXTURE = IronsSpellbooks.id("textures/item/temp_spellbook.png");
+    private static final String SPELLBOOK_MODEL_TEXTURE_PREFIX = "textures/item/spell_book_models/";
+    private static final String ITEM_TEXTURE_PREFIX = "textures/item/";
 
     public SpellBookGeoRenderer() {
         super(new SpellBookGeoModel());
@@ -22,7 +24,7 @@ public class SpellBookGeoRenderer extends GeoItemRenderer<SpellBook> {
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        if (transformType == ItemDisplayContext.GUI) {
+        if (transformType == ItemDisplayContext.GUI || transformType == ItemDisplayContext.NONE) {
             renderFlatInGui(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
             return;
         }
@@ -42,9 +44,14 @@ public class SpellBookGeoRenderer extends GeoItemRenderer<SpellBook> {
             return DEFAULT_TEXTURE;
         }
 
-        ResourceLocation texture = IronsSpellbooks.id("textures/item/" + itemId.getPath() + ".png");
-        if (Minecraft.getInstance().getResourceManager().getResource(texture).isPresent()) {
-            return texture;
+        ResourceLocation modelTexture = IronsSpellbooks.id(SPELLBOOK_MODEL_TEXTURE_PREFIX + itemId.getPath() + ".png");
+        if (Minecraft.getInstance().getResourceManager().getResource(modelTexture).isPresent()) {
+            return modelTexture;
+        }
+
+        ResourceLocation itemTexture = IronsSpellbooks.id(ITEM_TEXTURE_PREFIX + itemId.getPath() + ".png");
+        if (Minecraft.getInstance().getResourceManager().getResource(itemTexture).isPresent()) {
+            return itemTexture;
         }
 
         return DEFAULT_TEXTURE;

@@ -19,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ChargedProjectiles;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,14 +52,15 @@ public class AutoloaderCrossbow extends CrossbowItem {
             if (player.isCrouching()) {
                 setLoadingTicks(itemstack, 0);
                 setLoading(itemstack, false);
+                return InteractionResultHolder.consume(itemstack);
             }
+            return InteractionResultHolder.pass(itemstack);
         } else if (!player.getProjectile(itemstack).isEmpty()) {
-            startLoading(player, itemstack);
-            return InteractionResultHolder.consume(itemstack);
+            // Use vanilla crossbow loading so pull/charged model predicates animate correctly.
+            return super.use(pLevel, player, pHand);
         } else {
             return InteractionResultHolder.fail(itemstack);
         }
-        return InteractionResultHolder.pass(itemstack);
     }
 
     public static void startLoading(Player player, ItemStack itemstack) {
@@ -89,7 +92,7 @@ public class AutoloaderCrossbow extends CrossbowItem {
                 if (i > (entity instanceof LivingEntity livingEntity ? getChargeDuration(itemStack, livingEntity) : 1.25f * 20 * 3)) {
                     setLoading(itemStack, false);
                     if (entity instanceof LivingEntity && !isCharged(itemStack)) {
-                        // TODO Fabric 1.21: reimplement autoload using current Crossbow loading API.
+                        tryLoadProjectiles((LivingEntity) entity, itemStack);
                     }
                     SoundSource soundsource = entity instanceof Player ? SoundSource.PLAYERS : SoundSource.BLOCKS;
                     if (isCharged(itemStack)) {
@@ -102,6 +105,15 @@ public class AutoloaderCrossbow extends CrossbowItem {
                 setLoadingTicks(itemStack, i);
             }
         }
+    }
+
+    private static boolean tryLoadProjectiles(LivingEntity livingEntity, ItemStack itemStack) {
+        List<ItemStack> projectiles = draw(itemStack, livingEntity.getProjectile(itemStack), livingEntity);
+        if (projectiles.isEmpty()) {
+            return false;
+        }
+        itemStack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(projectiles));
+        return true;
     }
 
     public static int getChargeDuration(ItemStack pCrossbowStack, LivingEntity entity) {

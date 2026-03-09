@@ -4,6 +4,8 @@ import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.item.armor.IDisableHat;
 import io.redspace.ironsspellbooks.item.armor.IDisableJacket;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -52,6 +54,19 @@ public class PlayerMixin {
     @Inject(method = "canEat", at = @At(value = "RETURN"), cancellable = true)
     void canEatForGluttony(boolean pCanAlwaysEat, CallbackInfoReturnable<Boolean> cir) {
         if (((Player) (Object) this).hasEffect(MobEffectRegistry.GLUTTONY)) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "tryToStartFallFlying", at = @At(value = "HEAD"), cancellable = true)
+    void irons_spellbooks$tryToStartAngelWingsFallFlying(CallbackInfoReturnable<Boolean> cir) {
+        var self = (Player) (Object) this;
+        if (!self.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()))) {
+            return;
+        }
+        // Match vanilla start conditions, but allow Angel Wings effect as elytra source.
+        if (!self.onGround() && !self.isFallFlying() && !self.isInWater() && !self.hasEffect(MobEffects.LEVITATION)) {
+            ((PlayerAccessor) self).irons_spellbooks$startFallFlying();
             cir.setReturnValue(true);
         }
     }

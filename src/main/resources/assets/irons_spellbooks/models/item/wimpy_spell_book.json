@@ -1,4 +1,4 @@
-{
+﻿{
   "parent": "irons_spellbooks:item/template_spell_book_model",
   "textures": {
     "book": "irons_spellbooks:item/wimpy_spell_book",

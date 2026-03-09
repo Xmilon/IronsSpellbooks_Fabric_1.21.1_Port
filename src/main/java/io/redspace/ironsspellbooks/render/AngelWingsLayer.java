@@ -6,6 +6,7 @@ import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -48,8 +49,7 @@ public class AngelWingsLayer<T extends LivingEntity, M extends EntityModel<T>> e
     public boolean shouldRender(T entity) {
         //irons_spellbooks.LOGGER.debug("AngelWingsLayer.shouldRender {} {}", entity.getName().getString(), entity.getActiveEffects().stream().map(x -> x.getEffect().getDisplayName().getString()).collect(Collectors.toSet()));
         return !entity.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)
-                && entity.hasEffect(MobEffectRegistry.ANGEL_WINGS)
-                && !entity.hasEffect(MobEffectRegistry.TRUE_INVISIBILITY);
+                && entity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()));
     }
 
     public ResourceLocation getAngelWingsTexture(T entity) {

@@ -2,7 +2,6 @@ package io.redspace.ironsspellbooks.effect;
 
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.damage.DamageSources;
-import io.redspace.ironsspellbooks.mixin.LivingEntityAccessor;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,16 +36,5 @@ public class BurningDashEffect extends MagicMobEffect {
         return true;
     }
 
-    @Override
-    public void onEffectAdded(LivingEntity pLivingEntity, int pAmplifier) {
-        super.onEffectAdded(pLivingEntity, pAmplifier);
-        ((LivingEntityAccessor) pLivingEntity).setLivingEntityFlagInvoker(4, true);
-    }
-
-    @Override
-    public void onEffectRemoved(LivingEntity pLivingEntity, int pAmplifier) {
-        super.onEffectRemoved(pLivingEntity, pAmplifier);
-        ((LivingEntityAccessor) pLivingEntity).setLivingEntityFlagInvoker(4, false);
-    }
 }
 

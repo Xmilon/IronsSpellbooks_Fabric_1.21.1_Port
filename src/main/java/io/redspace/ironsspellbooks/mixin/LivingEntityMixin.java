@@ -11,17 +11,20 @@ import io.redspace.ironsspellbooks.effect.ISyncedMobEffect;
 import io.redspace.ironsspellbooks.entity.mobs.IMagicSummon;
 import io.redspace.ironsspellbooks.registries.ComponentRegistry;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +47,8 @@ import java.util.WeakHashMap;
 public abstract class LivingEntityMixin {
     @Unique
     private static final Map<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> irons_spellbooks$curioAttributeCache = new WeakHashMap<>();
+    @Unique
+    private boolean irons_spellbooks$wasFallFlying;
 
     @Inject(method = "onEffectRemoved", at = @At(value = "HEAD"))
     public void irons_spellbooks$onEffectRemoved(MobEffectInstance effectInstance, CallbackInfo ci) {
@@ -202,6 +207,31 @@ public abstract class LivingEntityMixin {
             self.getAttributes().addTransientAttributeModifiers(nextModifiers);
         }
         irons_spellbooks$curioAttributeCache.put(self, ImmutableMultimap.copyOf(nextModifiers));
+    }
+
+    @Inject(method = "updateFallFlying", at = @At("HEAD"))
+    public void irons_spellbooks$captureFallFlyingState(CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        irons_spellbooks$wasFallFlying = self.isFallFlying();
+    }
+
+    @Inject(method = "updateFallFlying", at = @At("TAIL"))
+    public void irons_spellbooks$updateAngelWingsFlight(CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        boolean hasAngelWingsEffect = self.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()));
+        if (!hasAngelWingsEffect) {
+            return;
+        }
+
+        // Vanilla handles start/stop conditions. Only keep glide alive if it was already active this tick.
+        if (!self.level().isClientSide
+                && self instanceof Player player
+                && irons_spellbooks$wasFallFlying
+                && !self.onGround()
+                && !self.isPassenger()
+                && !self.hasEffect(MobEffects.LEVITATION)) {
+            ((PlayerAccessor) player).irons_spellbooks$startFallFlying();
+        }
     }
 
 }

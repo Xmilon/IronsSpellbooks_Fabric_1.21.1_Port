@@ -9,6 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -33,7 +34,7 @@ public class ScreenEffectsOverlay implements LayeredDraw.Layer {
 //            guiHelper.drawString(Minecraft.getInstance().font, String.format("blood: %s", Minecraft.getInstance().player.getAttributeValue(AttributeRegistry.BLOOD_SPELL_POWER)), 10, 20, 0xFFFFFF);
 //        }
 
-        if (player.hasEffect(MobEffectRegistry.HEARTSTOP)) {
+        if (player.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.HEARTSTOP.get()))) {
             renderOverlayAdditive(guiHelper, HEARTSTOP_TEXTURE, 0.25f, 0, 0, .25f, screenWidth, screenHeight);
         }
         if (Minecraft.getInstance().options.getCameraType().isFirstPerson() && player.getRootVehicle().getType().equals(EntityRegistry.ICE_TOMB.get())) {

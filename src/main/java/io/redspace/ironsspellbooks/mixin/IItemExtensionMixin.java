@@ -2,6 +2,7 @@ package io.redspace.ironsspellbooks.mixin;
 
 
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.extensions.IItemStackExtension;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,14 +15,14 @@ public interface IItemExtensionMixin {
 
     @Inject(method = "canElytraFly", at = @At(value = "RETURN"), cancellable = true, remap = false)
     default void canElytraFly(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (entity.hasEffect(MobEffectRegistry.ANGEL_WINGS)) {
+        if (entity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()))) {
             cir.setReturnValue(true);
         }
     }
 
     @Inject(method = "elytraFlightTick", at = @At(value = "RETURN"), cancellable = true, remap = false)
     default void elytraFlightTick(LivingEntity entity, int flightTicks, CallbackInfoReturnable<Boolean> cir) {
-        if (entity.hasEffect(MobEffectRegistry.ANGEL_WINGS)) {
+        if (entity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()))) {
             cir.setReturnValue(true);
         }
     }

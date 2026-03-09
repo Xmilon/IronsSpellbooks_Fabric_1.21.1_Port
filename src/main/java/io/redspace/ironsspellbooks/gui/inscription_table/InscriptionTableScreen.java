@@ -261,7 +261,7 @@ public class InscriptionTableScreen extends AbstractContainerScreen<InscriptionT
         //
         // Level
         //
-        var levelText = Component.translatable("ui.irons_spellbooks.level()", spellLevel).withStyle(textColor);
+        var levelText = Component.translatable("ui.irons_spellbooks.level", spellLevel).withStyle(textColor);
         guiHelper.drawString(font, levelText, x + (LORE_PAGE_WIDTH - font.width(levelText.getString())) / 2, descLine, 0xFFFFFF, false);
         descLine += font.lineHeight * textScale * 2;
 

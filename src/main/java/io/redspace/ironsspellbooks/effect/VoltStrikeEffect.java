@@ -4,7 +4,6 @@ import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import io.redspace.ironsspellbooks.damage.DamageSources;
-import io.redspace.ironsspellbooks.mixin.LivingEntityAccessor;
 import io.redspace.ironsspellbooks.particle.BlastwaveParticleOptions;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.sounds.SoundEvents;
@@ -98,17 +97,6 @@ public class VoltStrikeEffect extends MagicMobEffect implements ISyncedMobEffect
         return true;
     }
 
-    @Override
-    public void onEffectAdded(LivingEntity pLivingEntity, int pAmplifier) {
-        super.onEffectAdded(pLivingEntity, pAmplifier);
-        ((LivingEntityAccessor) pLivingEntity).setLivingEntityFlagInvoker(4, true);
-    }
-
-    @Override
-    public void onEffectRemoved(LivingEntity pLivingEntity, int pAmplifier) {
-        super.onEffectRemoved(pLivingEntity, pAmplifier);
-        ((LivingEntityAccessor) pLivingEntity).setLivingEntityFlagInvoker(4, false);
-    }
 }
 
 

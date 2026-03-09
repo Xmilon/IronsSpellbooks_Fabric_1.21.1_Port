@@ -139,7 +139,7 @@ public class SpellWheelOverlay implements LayeredDraw.Layer {
         int textTitleMargin = 5;
         var spell = selectedSpell.getSpell();
         var title = spell.getDisplayName(minecraft.player).withStyle(Style.EMPTY.withUnderlined(true));
-        var level = Component.translatable("ui.irons_spellbooks.level()", TooltipsUtils.getLevelComponenet(selectedSpell, player).withStyle(spell.getRarity(spellLevel).getDisplayName().getStyle()));
+        var level = Component.translatable("ui.irons_spellbooks.level", TooltipsUtils.getLevelComponenet(selectedSpell, player).withStyle(spell.getRarity(spellLevel).getDisplayName().getStyle()));
         var mana = Component.translatable("ui.irons_spellbooks.mana_cost", selectedSpell.getSpell().getManaCost(spellLevel)).withStyle(ChatFormatting.AQUA);
         var cooldownTicks = MagicManager.getEffectiveSpellCooldown(spell, player, swsm.getSpellSlot(wheelSelection).getCastSource());
         var cooldownTime = Component.translatable("tooltip.irons_spellbooks.cooldown_length_seconds", Utils.timeFromTicks(cooldownTicks, 2)).withStyle(ChatFormatting.YELLOW);

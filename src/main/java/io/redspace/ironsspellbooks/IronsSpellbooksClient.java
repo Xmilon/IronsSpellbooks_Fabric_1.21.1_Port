@@ -39,17 +39,22 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ChargedProjectiles;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -66,6 +71,7 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         registerKeyMappingsAndInputTick();
         registerClientLifecycleCallbacks();
         registerTooltipCallbacks();
+        registerItemProperties();
         registerHudOverlays();
         registerModelLayers();
         registerEntityRenderers();
@@ -76,6 +82,37 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         MenuScreens.register(MenuRegistry.INSCRIPTION_TABLE_MENU.get(), InscriptionTableScreen::new);
         MenuScreens.register(MenuRegistry.SCROLL_FORGE_MENU.get(), ScrollForgeScreen::new);
         MenuScreens.register(MenuRegistry.ARCANE_ANVIL_MENU.get(), ArcaneAnvilScreen::new);
+    }
+
+    private static void registerItemProperties() {
+        var autoloader = ItemRegistry.AUTOLOADER_CROSSBOW.get();
+
+        ItemProperties.register(autoloader, ResourceLocation.withDefaultNamespace("pull"), (stack, level, entity, seed) -> {
+            if (entity == null) {
+                return 0.0F;
+            }
+            return CrossbowItem.isCharged(stack)
+                    ? 0.0F
+                    : (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / CrossbowItem.getChargeDuration(stack, entity);
+        });
+
+        ItemProperties.register(autoloader, ResourceLocation.withDefaultNamespace("pulling"), (stack, level, entity, seed) ->
+                entity != null
+                        && entity.isUsingItem()
+                        && entity.getUseItem() == stack
+                        && !CrossbowItem.isCharged(stack)
+                        ? 1.0F
+                        : 0.0F
+        );
+
+        ItemProperties.register(autoloader, ResourceLocation.withDefaultNamespace("charged"), (stack, level, entity, seed) ->
+                CrossbowItem.isCharged(stack) ? 1.0F : 0.0F
+        );
+
+        ItemProperties.register(autoloader, ResourceLocation.withDefaultNamespace("firework"), (stack, level, entity, seed) -> {
+            ChargedProjectiles projectiles = stack.get(DataComponents.CHARGED_PROJECTILES);
+            return projectiles != null && projectiles.contains(Items.FIREWORK_ROCKET) ? 1.0F : 0.0F;
+        });
     }
 
     private static void registerModelLoadingPlugins() {

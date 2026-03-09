@@ -9,6 +9,7 @@ import io.redspace.ironsspellbooks.item.armor.IArmorCapeProvider;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.registries.DataAttachmentRegistry;
 import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -130,7 +131,7 @@ public class ArmorCapeLayer extends RenderLayer<LivingEntity, HumanoidModel<Livi
         return !itemstack.is(Items.ELYTRA)
                 && itemstack.getItem() instanceof IArmorCapeProvider
                 && !hasPlayerCape(livingEntity)
-                && !livingEntity.hasEffect(MobEffectRegistry.ANGEL_WINGS)
+                && !livingEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(MobEffectRegistry.ANGEL_WINGS.get()))
                 && !livingEntity.hasEffect(MobEffectRegistry.TRUE_INVISIBILITY);
     }
 

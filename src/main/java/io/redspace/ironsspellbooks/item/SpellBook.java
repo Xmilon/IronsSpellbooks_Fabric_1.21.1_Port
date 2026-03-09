@@ -15,6 +15,7 @@ import io.redspace.ironsspellbooks.render.RenderHelper;
 import io.redspace.ironsspellbooks.util.ItemPropertiesHelper;
 import io.redspace.ironsspellbooks.util.MinecraftInstanceHelper;
 import io.redspace.ironsspellbooks.util.TooltipsUtils;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
@@ -180,7 +181,7 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        if (FabricLoader.getInstance().getEnvironmentType() != net.fabricmc.api.EnvType.CLIENT) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
             return;
         }
 

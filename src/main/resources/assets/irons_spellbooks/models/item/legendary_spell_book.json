@@ -1,4 +1,4 @@
-{
+﻿{
   "parent": "irons_spellbooks:item/template_spell_book_model",
   "textures": {
     "book": "irons_spellbooks:item/legendary_spell_book",

@@ -13,6 +13,7 @@ import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
 import io.redspace.ironsspellbooks.entity.mobs.SummonedSkeleton;
 import io.redspace.ironsspellbooks.entity.mobs.SummonedZombie;
+import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.registries.SoundRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -121,7 +122,18 @@ public class RaiseDeadSpell extends AbstractSpell {
                 boolean isSkeleton = Utils.random.nextDouble() < .3;
                 var equipment = getEquipment(getSpellPower(spellLevel, entity), Utils.random);
 
-                Monster undead = isSkeleton ? new SummonedSkeleton(world, entity, true) : new SummonedZombie(world, entity, true);
+                Monster undead;
+                if (isSkeleton) {
+                    SummonedSkeleton skeleton = new SummonedSkeleton(EntityRegistry.SUMMONED_SKELETON.get(), world);
+                    SummonManager.setOwner(skeleton, entity);
+                    skeleton.triggerRiseAnimation();
+                    undead = skeleton;
+                } else {
+                    SummonedZombie zombie = new SummonedZombie(EntityRegistry.SUMMONED_ZOMBIE.get(), world);
+                    SummonManager.setOwner(zombie, entity);
+                    zombie.triggerRiseAnimation();
+                    undead = zombie;
+                }
                 undead.finalizeSpawn((ServerLevel) world, world.getCurrentDifficultyAt(undead.getOnPos()), MobSpawnType.MOB_SUMMONED, null);
                 equip(undead, equipment);
                 var yrot = 6.281f / count * i + entity.getYRot() * Mth.DEG_TO_RAD;

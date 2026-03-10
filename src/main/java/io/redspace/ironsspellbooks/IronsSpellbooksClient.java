@@ -245,7 +245,6 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         registerEntityRenderer(EntityRegistry.COMET.get(), context -> new io.redspace.ironsspellbooks.entity.spells.comet.CometRenderer(context, 1.2f));
         registerEntityRenderer(EntityRegistry.TARGET_AREA_ENTITY.get(), io.redspace.ironsspellbooks.entity.spells.target_area.TargetAreaRenderer::new);
         registerEntityRenderer(EntityRegistry.PRIEST.get(), io.redspace.ironsspellbooks.entity.mobs.wizards.priest.PriestRenderer::new);
-        registerEntityRenderer(EntityRegistry.FALLING_BLOCK.get(), io.redspace.ironsspellbooks.entity.VisualFallingBlockRenderer::new);
         registerEntityRenderer(EntityRegistry.GUIDING_BOLT.get(), io.redspace.ironsspellbooks.entity.spells.guiding_bolt.GuidingBoltRenderer::new);
         registerEntityRenderer(EntityRegistry.GUST_COLLIDER.get(), io.redspace.ironsspellbooks.entity.spells.gust.GustRenderer::new);
         registerEntityRenderer(EntityRegistry.RAY_OF_FROST_VISUAL_ENTITY.get(), io.redspace.ironsspellbooks.entity.spells.ray_of_frost.RayOfFrostRenderer::new);

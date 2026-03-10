@@ -26,7 +26,7 @@ public class ThunderstormEffect extends MagicMobEffect {
                                 horizontalDistanceSqr(livingEntity, entity) < radiusSqr &&
                                 livingEntity.isPickable() &&
                                 !livingEntity.isSpectator() &&
-                                !Utils.shouldHealEntity(entity, livingEntity) &&
+                                !Utils.shouldHealEntity((net.minecraft.world.entity.Entity) entity, livingEntity) &&
                                 Utils.hasLineOfSight(entity.level(), entity, livingEntity, false)
                 )
                 .forEach(targetEntity -> {

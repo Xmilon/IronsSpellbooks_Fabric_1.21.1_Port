@@ -9,6 +9,7 @@ import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.*;
 import io.redspace.ironsspellbooks.entity.mobs.SummonedPolarBear;
+import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -94,7 +95,8 @@ public class SummonPolarBearSpell extends AbstractSpell {
             SummonedEntitiesCastData summonedEntitiesCastData = new SummonedEntitiesCastData();
             int summonTime = 20 * 60 * 10;
 
-            SummonedPolarBear polarBear = new SummonedPolarBear(world, entity);
+            SummonedPolarBear polarBear = new SummonedPolarBear(EntityRegistry.SUMMONED_POLAR_BEAR.get(), world);
+            SummonManager.setOwner(polarBear, entity);
             polarBear.setPos(entity.position());
 
             polarBear.getAttributes().getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(getBearDamage(spellLevel, entity));

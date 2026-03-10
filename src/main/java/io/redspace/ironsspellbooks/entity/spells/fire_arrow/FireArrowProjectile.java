@@ -111,7 +111,7 @@ public class FireArrowProjectile extends AbstractMagicProjectile {
                     DamageSources.applyDamage(entity, damage, SpellRegistry.FIRE_ARROW_SPELL.get().getDamageSource(this, getOwner()));
                 }
             }
-            if (ServerConfigs.SPELL_GREIFING.get()) {
+            if (ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING)) {
                 Explosion explosion = new Explosion(
                         level,
                         null,

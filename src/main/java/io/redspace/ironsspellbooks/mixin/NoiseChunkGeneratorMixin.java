@@ -21,7 +21,7 @@ public class NoiseChunkGeneratorMixin {
 
     @Inject(method = "createNoiseChunk", at = @At("RETURN"))
     void irons_spellbooks$detectAquifers(ChunkAccess chunk, StructureManager structureManager, Blender blender, RandomState random, CallbackInfoReturnable<NoiseChunk> cir) {
-        if (ServerConfigs.SPEC.isLoaded() && !ServerConfigs.AQUIFER_DETECTION.get()) {
+        if (ServerConfigs.SPEC.isLoaded() && !ServerConfigs.safeGet(ServerConfigs.AQUIFER_DETECTION)) {
             return;
         }
         IExtendedNoiseChunk noisechunk = (IExtendedNoiseChunk) cir.getReturnValue();

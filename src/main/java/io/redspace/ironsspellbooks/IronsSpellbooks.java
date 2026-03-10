@@ -8,6 +8,7 @@ import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
+import io.redspace.ironsspellbooks.config.ConfigBootstrap;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
 import io.redspace.ironsspellbooks.registries.*;
 import io.redspace.ironsspellbooks.setup.CommonSetup;
@@ -31,6 +32,7 @@ public class IronsSpellbooks implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ConfigBootstrap.registerConfigs();
         ModSetup.setup();
 
         MAGIC_MANAGER = new MagicManager();
@@ -69,7 +71,6 @@ public class IronsSpellbooks implements ModInitializer {
         CommonSetup.bootstrapFabric();
         SpellConfigManager.INSTANCE = new SpellConfigManager();
 
-        // Config registration is handled by the Fabric-side compatibility layer.
         // Keep eager class init to preserve defaults and side effects.
         ClientConfigs.SPEC.toString();
         ServerConfigs.SPEC.toString();
@@ -80,6 +81,4 @@ public class IronsSpellbooks implements ModInitializer {
         return ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, path);
     }
 }
-
-
 

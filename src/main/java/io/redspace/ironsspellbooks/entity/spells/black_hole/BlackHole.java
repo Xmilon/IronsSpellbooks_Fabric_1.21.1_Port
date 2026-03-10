@@ -163,7 +163,7 @@ public class BlackHole extends Projectile implements AntiMagicSusceptible {
                 entity.fallDistance = 0;
             }
         }
-        if (!level().isClientSide && ServerConfigs.SPELL_GREIFING.get()) {
+        if (!level().isClientSide && ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING)) {
             int tries = 0;
             BlockHitResult blockHit;
             do {

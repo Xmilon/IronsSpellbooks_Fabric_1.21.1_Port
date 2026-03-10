@@ -50,7 +50,7 @@ public enum SpellRarity implements StringRepresentable {
     }
 
     private static List<Double> getRawRarityConfigInternal() {
-        var fromConfig = (List<Double>) ServerConfigs.RARITY_CONFIG.get();
+        var fromConfig = (List<Double>) ServerConfigs.safeGet(ServerConfigs.RARITY_CONFIG);
 
         if (fromConfig.size() != 5) {
             var configDefault = (List<Double>) ServerConfigs.RARITY_CONFIG.getDefault();
@@ -91,7 +91,7 @@ public enum SpellRarity implements StringRepresentable {
         var sb = new StringBuilder();
         SpellRegistry.REGISTRY.forEach(s -> {
             sb.append(String.format("\nSpellType:%s\n", s));
-            sb.append(String.format("\tMinRarity:%s, MaxRarity:%s\n", s.getMinRarity(), s.getMaxRarity()));
+            sb.append(String.format("\tMinRarity:%s, MaxRarity:%s\n", s.getMinRarityValue(), s.getMaxRarity()));
             sb.append(String.format("\tMinLevel:%s, MaxLevel:%s\n", s.getMinLevel(), s.getMaxLevel()));
             sb.append(String.format("\tRawRarityConfig:%s\n", getRawRarityConfig().stream().map(Object::toString).collect(Collectors.joining(","))));
             sb.append(String.format("\tRarityConfig:%s\n", getRarityConfig().stream().map(Object::toString).collect(Collectors.joining(","))));
@@ -99,7 +99,7 @@ public enum SpellRarity implements StringRepresentable {
             for (int i = s.getMinLevel(); i <= s.getMaxLevel(); i++) {
                 List<Double> rarityConfig = getRawRarityConfig();
                 double d = i / (double) s.getMaxLevel();
-                int start = s.getMinRarity();
+                int start = s.getMinRarityValue().getValue();
                 int end = s.getMaxRarity();
                 List<Double> modifiedRarityBrackets = rarityConfig.subList(start, end + 1);
                 double total = modifiedRarityBrackets.stream().mapToDouble(a -> a).sum();
@@ -108,7 +108,7 @@ public enum SpellRarity implements StringRepresentable {
                 for (int j = 0; j < modifiedRarityBrackets.size(); j++) {
                     current += modifiedRarityBrackets.get(j) / total;
                     if (d <= current) {
-                        rarity = SpellRarity.values()[j + s.getMinRarity()];
+                        rarity = SpellRarity.values()[j + s.getMinRarityValue().getValue()];
                         break;
                     }
                 }
@@ -123,7 +123,7 @@ public enum SpellRarity implements StringRepresentable {
 
             sb.append("\n");
 
-            for (int i = s.getMinRarity(); i <= s.getMaxRarity(); i++) {
+            for (int i = s.getMinRarityValue().getValue(); i <= s.getMaxRarity(); i++) {
                 sb.append(String.format("\t\t%s -> Level %s\n", SpellRarity.values()[i], s.getMinLevelForRarity(SpellRarity.values()[i])));
             }
         });

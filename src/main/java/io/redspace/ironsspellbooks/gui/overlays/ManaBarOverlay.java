@@ -66,9 +66,9 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
         }
         int barX, barY;
         //TODO: cache these?
-        int configOffsetY = ClientConfigs.MANA_BAR_Y_OFFSET.get();
-        int configOffsetX = ClientConfigs.MANA_BAR_X_OFFSET.get();
-        Anchor anchor = ClientConfigs.MANA_BAR_ANCHOR.get();
+        int configOffsetY = ClientConfigs.safeGet(ClientConfigs.MANA_BAR_Y_OFFSET);
+        int configOffsetX = ClientConfigs.safeGet(ClientConfigs.MANA_BAR_X_OFFSET);
+        Anchor anchor = ClientConfigs.safeGet(ClientConfigs.MANA_BAR_ANCHOR);
         if (anchor == Anchor.XP && player.getJumpRidingScale() > 0) //Hide XP Mana bar when actively jumping on a horse
             return;
         barX = getBarX(anchor, screenWidth) + configOffsetX;
@@ -88,10 +88,10 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
         int textX, textY;
         String manaFraction = (mana) + "/" + maxMana;
 
-        textX = ClientConfigs.MANA_TEXT_X_OFFSET.get() + barX + imageWidth / 2 - (int) ((("" + mana).length() + 0.5) * CHAR_WIDTH);
-        textY = ClientConfigs.MANA_TEXT_Y_OFFSET.get() + barY + (anchor == Anchor.XP ? ICON_ROW_HEIGHT / 3 : ICON_ROW_HEIGHT);
+        textX = ClientConfigs.safeGet(ClientConfigs.MANA_TEXT_X_OFFSET) + barX + imageWidth / 2 - (int) ((("" + mana).length() + 0.5) * CHAR_WIDTH);
+        textY = ClientConfigs.safeGet(ClientConfigs.MANA_TEXT_Y_OFFSET) + barY + (anchor == Anchor.XP ? ICON_ROW_HEIGHT / 3 : ICON_ROW_HEIGHT);
 
-        if (ClientConfigs.MANA_BAR_TEXT_VISIBLE.get()) {
+        if (ClientConfigs.safeGet(ClientConfigs.MANA_BAR_TEXT_VISIBLE)) {
             guiHelper.drawString(Minecraft.getInstance().font, manaFraction, textX, textY, TEXT_COLOR);
             //gui.getFont().draw(poseStack, manaFraction, textX, textY, TEXT_COLOR);
         }
@@ -101,7 +101,7 @@ public class ManaBarOverlay implements LayeredDraw.Layer {
         if (player == null) {
             return false;
         }
-        var display = ClientConfigs.MANA_BAR_DISPLAY.get();
+        var display = ClientConfigs.safeGet(ClientConfigs.MANA_BAR_DISPLAY);
         int maxMana = getPlayerMaxMana(player);
         int mana = ClientMagicData.getPlayerMana();
         return !player.isSpectator() && display != Display.Never &&

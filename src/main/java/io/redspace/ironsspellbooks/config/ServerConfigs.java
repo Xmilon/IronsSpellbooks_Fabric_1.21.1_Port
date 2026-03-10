@@ -206,6 +206,14 @@ public class ServerConfigs {
         cacheItemList(IMBUE_BLACKLIST.get(), IMBUE_BLACKLIST_ITEMS);
     }
 
+    public static <T> T safeGet(ModConfigSpec.ConfigValue<T> value) {
+        try {
+            return value.get();
+        } catch (IllegalStateException e) {
+            return value.getDefault();
+        }
+    }
+
     private static void cacheItemList(List<? extends String> ids, Set<Item> output) {
         output.clear();
         for (String name : ids) {

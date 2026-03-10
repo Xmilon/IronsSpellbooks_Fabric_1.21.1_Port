@@ -247,7 +247,7 @@ public class ClientPlayerEvents {
                 lines.add(1, Component.translatable("tooltip.irons_spellbooks.can_be_imbued_frame", Component.translatable("tooltip.irons_spellbooks.can_be_imbued_number", spellContainer.getActiveSpellCount(), spellContainer.getMaxSpellCount()).withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GOLD));
             }
             if (stack.has(ComponentRegistry.MULTIHAND_WEAPON)) {
-                Predicate<Holder<Attribute>> predicate = ServerConfigs.APPLY_ALL_MULTIHAND_ATTRIBUTES.get() ? Utils.NON_BASE_ATTRIBUTES : Utils.ONLY_MAGIC_ATTRIBUTES;
+                Predicate<Holder<Attribute>> predicate = ServerConfigs.safeGet(ServerConfigs.APPLY_ALL_MULTIHAND_ATTRIBUTES) ? Utils.NON_BASE_ATTRIBUTES : Utils.ONLY_MAGIC_ATTRIBUTES;
                 int i = TooltipsUtils.indexOfComponent(lines, "item.modifiers.mainhand");
                 if (i >= 0) {
                     int endIndex = 0;

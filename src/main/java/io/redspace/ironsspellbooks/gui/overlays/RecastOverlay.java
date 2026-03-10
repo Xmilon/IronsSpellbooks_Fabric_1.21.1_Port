@@ -68,7 +68,7 @@ public class RecastOverlay implements LayeredDraw.Layer {
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        Anchor anchor = ClientConfigs.RECAST_ANCHOR.get();
+        Anchor anchor = ClientConfigs.safeGet(ClientConfigs.RECAST_ANCHOR);
         for (int castIndex = 0; castIndex < activeRecasts.size(); castIndex++) {
             var recastInstance = activeRecasts.get(castIndex);
             var spell = SpellRegistry.getSpell(recastInstance.getSpellId());
@@ -84,8 +84,8 @@ public class RecastOverlay implements LayeredDraw.Layer {
             if (anchor == Anchor.TopCenter) {
                 barY += screenTopBuffer + bossbarOffset;
             }
-            barX += ClientConfigs.RECAST_X_OFFSET.get();
-            barY += ClientConfigs.RECAST_Y_OFFSET.get();
+            barX += ClientConfigs.safeGet(ClientConfigs.RECAST_X_OFFSET);
+            barY += ClientConfigs.safeGet(ClientConfigs.RECAST_Y_OFFSET);
             barY += totalHeightPerBar * castIndex;
 
             var poseStack = guiGraphics.pose();

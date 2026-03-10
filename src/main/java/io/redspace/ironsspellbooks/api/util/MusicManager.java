@@ -25,7 +25,7 @@ public class MusicManager {
     }
 
     public static void createEvent(ResourceKey<Level> dimension, UUID id, IMusicHandler event) {
-        if (!ClientConfigs.ENABLE_BOSS_MUSIC.get()) {
+        if (!ClientConfigs.safeGet(ClientConfigs.ENABLE_BOSS_MUSIC)) {
             return;
         }
         var manager = getManagerFor(dimension);

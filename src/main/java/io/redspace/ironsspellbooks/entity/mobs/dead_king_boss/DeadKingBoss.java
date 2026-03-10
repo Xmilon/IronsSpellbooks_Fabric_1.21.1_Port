@@ -236,9 +236,9 @@ public class DeadKingBoss extends AbstractSpellCastingMob implements Enemy, IAni
         this.playerScale = pLevel.players().stream().filter(player -> distanceToSqr(player) < 3600 && !player.isSpectator() && !player.isCreative()).toList().size();
         int extraPlayers = Math.max(0, playerScale - 1);
         double extraHealthPercent = extraPlayers * 0.40 + extraPlayers * extraPlayers * 0.10;
-        double extraHealth = ServerConfigs.DEAD_KING_ADDITIONAL_HEALTH.get();
-        double extraDamage = ServerConfigs.DEAD_KING_ADDITIONAL_ATTACK_DAMAGE.get();
-        double extraPower = ServerConfigs.DEAD_KING_ADDITIONAL_SPELL_POWER.get();
+        double extraHealth = ServerConfigs.safeGet(ServerConfigs.DEAD_KING_ADDITIONAL_HEALTH);
+        double extraDamage = ServerConfigs.safeGet(ServerConfigs.DEAD_KING_ADDITIONAL_ATTACK_DAMAGE);
+        double extraPower = ServerConfigs.safeGet(ServerConfigs.DEAD_KING_ADDITIONAL_SPELL_POWER);
         if (extraHealth != 0) {
             this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier(IronsSpellbooks.id("config"), extraHealth, AttributeModifier.Operation.ADD_VALUE));
         }

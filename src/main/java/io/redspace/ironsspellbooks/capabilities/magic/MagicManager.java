@@ -41,7 +41,7 @@ public class MagicManager implements IMagicManager {
         var mana = playerMagicData.getMana();
         if (mana != playerMaxMana) {
             float playerManaRegenMultiplier = (float) io.redspace.ironsspellbooks.api.registry.AttributeRegistry.getValueOrDefault(serverPlayer, MANA_REGEN, 1.0D);
-            var increment = playerMaxMana * playerManaRegenMultiplier * .01f * ServerConfigs.MANA_REGEN_MULTIPLIER.get().floatValue();
+            var increment = playerMaxMana * playerManaRegenMultiplier * .01f * ServerConfigs.safeGet(ServerConfigs.MANA_REGEN_MULTIPLIER).floatValue();
             playerMagicData.setMana(Mth.clamp(playerMagicData.getMana() + increment, 0, playerMaxMana));
             return true;
         } else {
@@ -162,7 +162,7 @@ public class MagicManager implements IMagicManager {
 
         float itemCoolDownModifer = 1;
         if (castSource == CastSource.SWORD) {
-            itemCoolDownModifer = ServerConfigs.SWORDS_CD_MULTIPLIER.get().floatValue();
+            itemCoolDownModifer = ServerConfigs.safeGet(ServerConfigs.SWORDS_CD_MULTIPLIER).floatValue();
         }
         return (int) (spell.getSpellCooldown() * (2 - Utils.softCapFormula(playerCooldownModifier)) * itemCoolDownModifer);
     }

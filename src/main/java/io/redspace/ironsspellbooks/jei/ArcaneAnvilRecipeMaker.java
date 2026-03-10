@@ -35,7 +35,7 @@ public final class ArcaneAnvilRecipeMaker {
     }
 
     private static Stream<ArcaneAnvilJeiRecipe> getScrollRecipes(JeiPlugin.ItemFinder itemFinder) {
-        if (!ServerConfigs.SPEC.isLoaded() || ServerConfigs.SCROLL_MERGING.get()) {
+        if (!ServerConfigs.SPEC.isLoaded() || ServerConfigs.safeGet(ServerConfigs.SCROLL_MERGING)) {
             return SpellRegistry.getEnabledSpells().stream()
                     .sorted(Comparator.comparing(AbstractSpell::getSpellId))
                     .flatMap(spell -> IntStream.rangeClosed(spell.getMinLevel(), spell.getMaxLevel() - 1).mapToObj(i -> new ArcaneAnvilJeiRecipe(spell, i)));

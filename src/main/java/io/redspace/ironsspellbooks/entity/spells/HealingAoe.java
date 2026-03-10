@@ -32,7 +32,7 @@ public class HealingAoe extends AoeEntity implements AntiMagicSusceptible {
 
     @Override
     public void applyEffect(LivingEntity target) {
-        if (getOwner() instanceof LivingEntity owner && Utils.shouldHealEntity(owner, target)) {
+        if (getOwner() instanceof LivingEntity owner && Utils.shouldHealEntity((Entity) owner, target)) {
             float healAmount = getDamage();
             NeoForge.EVENT_BUS.post(new SpellHealEvent((LivingEntity) getOwner(), target, healAmount, SchoolRegistry.HOLY.get()));
             target.heal(healAmount);

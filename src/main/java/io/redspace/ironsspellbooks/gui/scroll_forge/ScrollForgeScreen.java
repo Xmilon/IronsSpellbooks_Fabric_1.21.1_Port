@@ -70,7 +70,7 @@ public class ScrollForgeScreen extends AbstractContainerScreen<ScrollForgeMenu> 
     }
 
     private void resetList() {
-        if (!(!menu.getInkSlot().getItem().isEmpty() && (menu.getInkSlot().getItem().getItem() instanceof InkItem inkItem && inkItem.getRarity().compareRarity(SpellRarity.values()[selectedSpell.getMinRarity()]) >= 0)))
+        if (!(!menu.getInkSlot().getItem().isEmpty() && (menu.getInkSlot().getItem().getItem() instanceof InkItem inkItem && inkItem.getRarity().compareRarity(selectedSpell.getMinRarityValue()) >= 0)))
             setSelectedSpell(SpellRegistry.none());
         //TODO: reorder setting old focus to test if we actually need to reset the spell... or just give ink its own path since we dont even need to regenerate the list anyways
         //TODO: update: what the fuck does that mean
@@ -130,7 +130,7 @@ public class ScrollForgeScreen extends AbstractContainerScreen<ScrollForgeMenu> 
             SpellCardInfo spellCard = availableSpells.get(i);
 
             if (i - scrollOffset >= 0 && i - scrollOffset < 3) {
-                if (inkRarity == null || spellCard.spell.getMinRarity() > inkRarity.getValue()) {
+                if (inkRarity == null || spellCard.spell.getMinRarityValue().getValue() > inkRarity.getValue()) {
                     spellCard.activityState = SpellCardInfo.ActivityState.INK_ERROR;
                 } else if (minecraft != null && !spellCard.spell.canBeCraftedBy(minecraft.player)) {
                     spellCard.activityState = SpellCardInfo.ActivityState.UNLEARNED_ERROR;

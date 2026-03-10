@@ -4,6 +4,7 @@ import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import io.redspace.ironsspellbooks.entity.mobs.goals.melee.AttackAnimationData;
 import io.redspace.ironsspellbooks.entity.mobs.wizards.GenericAnimatedWarlockAttackGoal;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -52,7 +53,7 @@ public class SummonedRapierEntity extends SummonedWeaponEntity {
 
     public SummonedRapierEntity(Level level, LivingEntity owner) {
         this(EntityRegistry.SUMMONED_RAPIER.get(), level);
-        setSummoner(owner);
+        SummonManager.setOwner(this, owner);
     }
 
     @Override

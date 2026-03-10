@@ -12,6 +12,7 @@ import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
 import io.redspace.ironsspellbooks.entity.mobs.SummonedVex;
+import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -108,7 +109,8 @@ public class SummonVexSpell extends AbstractSpell {
             int summonTime = 20 * 60 * 10;
             int count = getSummonCount(spellLevel, entity);
             for (int i = 0; i < count; i++) {
-                SummonedVex vex = new SummonedVex(world, entity);
+                SummonedVex vex = new SummonedVex(EntityRegistry.SUMMONED_VEX.get(), world);
+                SummonManager.setOwner(vex, entity);
                 vex.moveTo(Utils.getSpellCastStart(entity).add(new Vec3(Utils.getRandomScaled(2), 1, Utils.getRandomScaled(2))));
                 vex.finalizeSpawn((ServerLevel) world, world.getCurrentDifficultyAt(vex.getOnPos()), MobSpawnType.MOB_SUMMONED, null);
                 var creature = NeoForge.EVENT_BUS.post(new SpellSummonEvent<>(entity, vex, this.spellId, spellLevel)).getCreature();

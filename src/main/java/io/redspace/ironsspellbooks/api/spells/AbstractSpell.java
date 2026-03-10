@@ -105,7 +105,11 @@ public abstract class AbstractSpell {
      */
     @Deprecated(forRemoval = true)
     public int getMinRarity() {
-        return SpellConfigManager.getSpellConfigValue(this, SpellConfigParameter.MIN_RARITY).getValue();
+        return getMinRarityValue().getValue();
+    }
+
+    public SpellRarity getMinRarityValue() {
+        return SpellConfigManager.getSpellConfigValue(this, SpellConfigParameter.MIN_RARITY);
     }
 
     public int getMaxLevel() {
@@ -329,7 +333,7 @@ public abstract class AbstractSpell {
         var event = new SpellOnCastEvent(serverPlayer, this.getSpellId(), spellLevel, getManaCost(spellLevel), this.getSchoolType(), castSource);
         NeoForge.EVENT_BUS.post(event);
         magicData.incrementSchoolCastCount(event.getSchoolType());
-        if (castSource.consumesMana() && !playerAlreadyHasRecast && !(serverPlayer.isCreative() && !ServerConfigs.CREATIVE_MANA_COST.get())) {
+        if (castSource.consumesMana() && !playerAlreadyHasRecast && !(serverPlayer.isCreative() && !ServerConfigs.safeGet(ServerConfigs.CREATIVE_MANA_COST))) {
             var newMana = Math.max(magicData.getMana() - event.getManaCost(), 0);
             magicData.setMana(newMana);
             PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData, serverPlayer));
@@ -341,7 +345,7 @@ public abstract class AbstractSpell {
         var playerHasRecastsLeft = playerRecasts.hasRecastForSpell(getSpellId());
         if (playerAlreadyHasRecast && playerHasRecastsLeft) {
             playerRecasts.decrementRecastCount(getSpellId());
-        } else if (!playerHasRecastsLeft && triggerCooldown && !(serverPlayer.isCreative() && !ServerConfigs.CREATIVE_COOLDOWN.get())) {
+        } else if (!playerHasRecastsLeft && triggerCooldown && !(serverPlayer.isCreative() && !ServerConfigs.safeGet(ServerConfigs.CREATIVE_COOLDOWN))) {
             MagicHelper.MAGIC_MANAGER.addCooldown(serverPlayer, this, castSource);
         }
 
@@ -387,7 +391,7 @@ public abstract class AbstractSpell {
      * Checks for if a player is allowed to cast a spell
      */
     public CastResult canBeCastedBy(int spellLevel, CastSource castSource, MagicData playerMagicData, Player player) {
-        if (ServerConfigs.DISABLE_ADVENTURE_MODE_CASTING.get()) {
+        if (ServerConfigs.safeGet(ServerConfigs.DISABLE_ADVENTURE_MODE_CASTING)) {
             if (player instanceof ServerPlayer serverPlayer && serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE) {
                 return new CastResult(CastResult.Type.FAILURE, Component.translatable("ui.irons_spellbooks.cast_error_adventure").withStyle(ChatFormatting.RED));
             }
@@ -401,9 +405,9 @@ public abstract class AbstractSpell {
             return new CastResult(CastResult.Type.FAILURE, Component.translatable("ui.irons_spellbooks.cast_error_unlearned").withStyle(ChatFormatting.RED));
         } else if (castSource == CastSource.SCROLL && this.getRecastCount(spellLevel, player) > 0) {
             return new CastResult(CastResult.Type.FAILURE, Component.translatable("ui.irons_spellbooks.cast_error_scroll", getDisplayName(player)).withStyle(ChatFormatting.RED));
-        } else if ((castSource == CastSource.SPELLBOOK || castSource == CastSource.SWORD) && isSpellOnCooldown && !(player.isCreative() && !ServerConfigs.CREATIVE_COOLDOWN.get())) {
+        } else if ((castSource == CastSource.SPELLBOOK || castSource == CastSource.SWORD) && isSpellOnCooldown && !(player.isCreative() && !ServerConfigs.safeGet(ServerConfigs.CREATIVE_COOLDOWN))) {
             return new CastResult(CastResult.Type.FAILURE, Component.translatable("ui.irons_spellbooks.cast_error_cooldown", getDisplayName(player)).withStyle(ChatFormatting.RED));
-        } else if (!hasRecastForSpell && castSource.consumesMana() && !hasEnoughMana && !(player.isCreative() && !ServerConfigs.CREATIVE_MANA_COST.get())) {
+        } else if (!hasRecastForSpell && castSource.consumesMana() && !hasEnoughMana && !(player.isCreative() && !ServerConfigs.safeGet(ServerConfigs.CREATIVE_MANA_COST))) {
             return new CastResult(CastResult.Type.FAILURE, Component.translatable("ui.irons_spellbooks.cast_error_mana", getDisplayName(player)).withStyle(ChatFormatting.RED));
         } else {
             return new CastResult(CastResult.Type.SUCCESS);
@@ -509,7 +513,7 @@ public abstract class AbstractSpell {
     private void initializeRarityWeights() {
         synchronized (SpellRegistry.none()) {
             if (rarityWeights == null) {
-                int minRarity = getMinRarity();
+                int minRarity = getMinRarityValue().getValue();
                 int maxRarity = getMaxRarity();
                 List<Double> rarityRawConfig = SpellRarity.getRawRarityConfig();
                 List<Double> rarityConfig = SpellRarity.getRarityConfig();
@@ -546,7 +550,7 @@ public abstract class AbstractSpell {
         int maxLevel = getMaxLevel();
         int maxRarity = getMaxRarity();
         if (maxLevel == 1)
-            return SpellRarity.values()[getMinRarity()];
+            return getMinRarityValue();
         if (level >= maxLevel) {
             return SpellRarity.LEGENDARY;
         }
@@ -594,7 +598,7 @@ public abstract class AbstractSpell {
             initializeRarityWeights();
         }
 
-        int minRarity = getMinRarity();
+        int minRarity = getMinRarityValue().getValue();
         int maxLevel = getMaxLevel();
         if (rarity.getValue() < minRarity) {
             return 0;

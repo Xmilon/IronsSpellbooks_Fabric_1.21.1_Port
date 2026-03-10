@@ -91,7 +91,7 @@ public class SmallMagicFireball extends AbstractMagicProjectile {
     protected void onHitBlock(BlockHitResult pResult) {
         super.onHitBlock(pResult);
         if (!this.level().isClientSide) {
-            if (ServerConfigs.SPELL_GREIFING.get()) {
+            if (ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING)) {
                 BlockPos blockpos = pResult.getBlockPos().relative(pResult.getDirection());
                 if (this.level().isEmptyBlock(blockpos)) {
                     this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));

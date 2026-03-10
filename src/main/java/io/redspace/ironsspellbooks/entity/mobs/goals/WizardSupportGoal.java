@@ -81,7 +81,7 @@ public class WizardSupportGoal<T extends PathfinderMob & SupportMob & IMagicEnti
             return false;
         }
         LivingEntity livingentity = this.mob.getSupportTarget();
-        if (livingentity != null && livingentity.isAlive() && Utils.shouldHealEntity(mob, livingentity) && livingentity.getHealth() < livingentity.getMaxHealth() * 0.9f) {
+        if (livingentity != null && livingentity.isAlive() && Utils.shouldHealEntity((net.minecraft.world.entity.Entity) mob, livingentity) && livingentity.getHealth() < livingentity.getMaxHealth() * 0.9f) {
             this.target = livingentity;
             return true;
         } else {

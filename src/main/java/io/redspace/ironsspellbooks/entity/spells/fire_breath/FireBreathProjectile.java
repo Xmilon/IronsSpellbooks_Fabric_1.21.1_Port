@@ -33,7 +33,7 @@ public class FireBreathProjectile extends AbstractConeProjectile {
         if (!level().isClientSide) {
             if (dealDamageActive) {
                 //Set Fire Blocks
-                if (ServerConfigs.SPELL_GREIFING.get()) {
+                if (ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING)) {
                     float range = 15 * Mth.DEG_TO_RAD;
                     for (int i = 0; i < 3; i++) {
                         Vec3 cast = getOwner().getLookAngle().normalize().xRot(Utils.random.nextFloat() * range * 2 - range).yRot(Utils.random.nextFloat() * range * 2 - range);

@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-@AutoSpellConfig
 public class ShadowSlashSpell extends AbstractSpell {
     private final ResourceLocation spellId = ResourceLocation.fromNamespaceAndPath(IronsSpellbooks.MODID, "shadow_slash");
 

@@ -26,7 +26,7 @@ public class GuiMixin {
     //TODO: can't this be an event?
     @Inject(method = "isExperienceBarVisible", at = @At(value = "HEAD"), cancellable = true)
     public void irons_spellbooks$disableXpBar(CallbackInfoReturnable<Boolean> cir) {
-        if (ClientConfigs.MANA_BAR_ANCHOR.get() == ManaBarOverlay.Anchor.XP && Minecraft.getInstance().player != null && ManaBarOverlay.shouldShowManaBar(Minecraft.getInstance().player)) {
+        if (ClientConfigs.safeGet(ClientConfigs.MANA_BAR_ANCHOR) == ManaBarOverlay.Anchor.XP && Minecraft.getInstance().player != null && ManaBarOverlay.shouldShowManaBar(Minecraft.getInstance().player)) {
             cir.setReturnValue(false);
         }
     }

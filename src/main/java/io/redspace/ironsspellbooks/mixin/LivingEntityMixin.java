@@ -156,7 +156,7 @@ public abstract class LivingEntityMixin {
         var list = modifiers.modifiers().stream().filter(entry -> entry.slot() == EquipmentSlotGroup.MAINHAND).toList();
         Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
         for (ItemAttributeModifiers.Entry entry : list) {
-            var predicate = ServerConfigs.APPLY_ALL_MULTIHAND_ATTRIBUTES.get() ? Utils.NON_BASE_ATTRIBUTES : Utils.ONLY_MAGIC_ATTRIBUTES;
+            var predicate = ServerConfigs.safeGet(ServerConfigs.APPLY_ALL_MULTIHAND_ATTRIBUTES) ? Utils.NON_BASE_ATTRIBUTES : Utils.ONLY_MAGIC_ATTRIBUTES;
             if (predicate.test(entry.attribute())) {
                 map.put(entry.attribute(), entry.modifier());
             }

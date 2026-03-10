@@ -86,7 +86,7 @@ public class MagicFireball extends AbstractMagicProjectile {
                     DamageSources.applyDamage(entity, damage, SpellRegistry.FIREBALL_SPELL.get().getDamageSource(this, getOwner()));
                 }
             }
-            if (ServerConfigs.SPELL_GREIFING.get()) {
+            if (ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING)) {
                 Explosion explosion = new Explosion(
                         level(),
                         null,

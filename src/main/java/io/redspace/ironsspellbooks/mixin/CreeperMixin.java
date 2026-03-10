@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class CreeperMixin {
     @Inject(method = "thunderHit", at = @At(value = "HEAD"))
     void betterThunderHit(ServerLevel pLevel, LightningBolt pLightning, CallbackInfo ci) {
-        if (ServerConfigs.BETTER_CREEPER_THUNDERHIT.get()) {
+        if (ServerConfigs.safeGet(ServerConfigs.BETTER_CREEPER_THUNDERHIT)) {
             Creeper self = (Creeper) (Object) this;
             if (!self.isPowered()) {
                 self.heal(self.getMaxHealth());

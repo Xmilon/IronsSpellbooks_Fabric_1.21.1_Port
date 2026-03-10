@@ -70,7 +70,7 @@ public final class AlchemistCauldronRecipeMaker {
     }
 
     private static Stream<AlchemistCauldronJeiRecipe> getPotionRecipes(IVanillaRecipeFactory vanillaRecipeFactory, JeiPlugin.ItemFinder itemFinder) {
-        if (!ServerConfigs.ALLOW_CAULDRON_BREWING.get()) {
+        if (!ServerConfigs.safeGet(ServerConfigs.ALLOW_CAULDRON_BREWING)) {
             return Stream.of();
         }
         var level = Minecraft.getInstance().level;

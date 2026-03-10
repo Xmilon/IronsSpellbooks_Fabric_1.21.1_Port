@@ -121,7 +121,7 @@ public final class ClientInputEvents {
         }
 
         if (isAltScrollModifierDown()) {
-            if (ClientConfigs.SPELL_BAR_DISPLAY.get().equals(ManaBarOverlay.Display.Contextual)) {
+            if (ClientConfigs.safeGet(ClientConfigs.SPELL_BAR_DISPLAY).equals(ManaBarOverlay.Display.Contextual)) {
                 SpellBarOverlay.fadeoutDelay = 40;
             }
         }

@@ -35,7 +35,7 @@ public interface IMagicSummon extends AntiMagicSusceptible {
     }
 
     default boolean shouldIgnoreDamage(DamageSource damageSource) {
-        if (!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !ServerConfigs.CAN_ATTACK_OWN_SUMMONS.get() && damageSource.getEntity() != null) {
+        if (!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !ServerConfigs.safeGet(ServerConfigs.CAN_ATTACK_OWN_SUMMONS) && damageSource.getEntity() != null) {
             return DamageSources.isFriendlyFireBetween(damageSource.getEntity(), (Entity) this);
         }
         return false;

@@ -20,7 +20,7 @@ public class MinecraftMixin {
         if (Minecraft.getInstance().player == null || pEntity == null || cir.getReturnValue()) {
             return;
         }
-        if (ClientConfigs.SUMMONS_GLOW.get() && ClientMagicData.getActiveSummons().contains(pEntity.getUUID())) {
+        if (ClientConfigs.safeGet(ClientConfigs.SUMMONS_GLOW) && ClientMagicData.getActiveSummons().contains(pEntity.getUUID())) {
             cir.setReturnValue(true);
         } else if (Minecraft.getInstance().player.hasEffect(MobEffectRegistry.PLANAR_SIGHT) && pEntity instanceof LivingEntity && Mth.abs((float) (pEntity.getY() - Minecraft.getInstance().player.getY())) < 18) {
             cir.setReturnValue(true);

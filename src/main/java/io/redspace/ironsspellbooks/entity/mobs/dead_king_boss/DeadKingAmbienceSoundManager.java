@@ -19,7 +19,7 @@ public class DeadKingAmbienceSoundManager {
     }
 
     public void trigger() {
-        if (ClientConfigs.ENABLE_BOSS_MUSIC.get() && (this.soundInstance == null || this.soundInstance.isStopped())) {
+        if (ClientConfigs.safeGet(ClientConfigs.ENABLE_BOSS_MUSIC) && (this.soundInstance == null || this.soundInstance.isStopped())) {
             this.soundInstance = new DeadKingAmbienceSoundInstance(vec3);
             Minecraft.getInstance().getSoundManager().play(soundInstance);
         }

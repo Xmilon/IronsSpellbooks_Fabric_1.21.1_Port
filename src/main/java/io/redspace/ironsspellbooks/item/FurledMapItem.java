@@ -67,7 +67,7 @@ public class FurledMapItem extends Item {
                     }
                 }
                 if (holder.isPresent()) {
-                    Pair<BlockPos, Holder<Structure>> pair = serverlevel.getChunkSource().getGenerator().findNearestMapStructure(serverlevel, holder.get(), player.blockPosition(), 100, ServerConfigs.FURLED_MAPS_SKIP_CHUNKS.get());
+                    Pair<BlockPos, Holder<Structure>> pair = serverlevel.getChunkSource().getGenerator().findNearestMapStructure(serverlevel, holder.get(), player.blockPosition(), 100, ServerConfigs.safeGet(ServerConfigs.FURLED_MAPS_SKIP_CHUNKS));
                     if (pair != null) {
                         var blockpos = pair.getFirst();
                         ItemStack mapStack = MapItem.create(serverlevel, blockpos.getX(), blockpos.getZ(), (byte) 2, true, true);

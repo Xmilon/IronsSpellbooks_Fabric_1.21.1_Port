@@ -122,10 +122,18 @@ public class ClientConfigs {
 
     public static void onConfigReload() {
         try {
-            summonGlowColor = Integer.decode(SUMMONS_GLOW_HEX_COLOR.get());
+            summonGlowColor = Integer.decode(safeGet(SUMMONS_GLOW_HEX_COLOR));
         } catch (Exception ignored) {
-            IronsSpellbooks.LOGGER.warn("Failed to parse summonGlowColor \"{}\", reverting to default", SUMMONS_GLOW_HEX_COLOR.get());
+            IronsSpellbooks.LOGGER.warn("Failed to parse summonGlowColor \"{}\", reverting to default", safeGet(SUMMONS_GLOW_HEX_COLOR));
             summonGlowColor = 0xAAFFAA;
+        }
+    }
+
+    public static <T> T safeGet(ModConfigSpec.ConfigValue<T> value) {
+        try {
+            return value.get();
+        } catch (IllegalStateException e) {
+            return value.getDefault();
         }
     }
 }

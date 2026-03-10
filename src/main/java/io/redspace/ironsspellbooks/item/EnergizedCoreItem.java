@@ -44,7 +44,7 @@ public class EnergizedCoreItem extends Item {
                         Vec3 center = new Vec3(blockPos.getX() + .5, blockPos.getY(), blockPos.getZ() + .5);
                         //boom
                         doLightningBolt(level, center);
-                        Level.ExplosionInteraction blockinteraction = ServerConfigs.SPELL_GREIFING.get() ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
+                        Level.ExplosionInteraction blockinteraction = ServerConfigs.safeGet(ServerConfigs.SPELL_GREIFING) ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
                         MagicManager.spawnParticles(level, ParticleHelper.ELECTRIC_SPARKS, center.x, center.y + .5, center.z, 50, .1f, .1f, .1f, .6, false);
                         MagicManager.spawnParticles(level, new BlastwaveParticleOptions(new Vector3f(.7f, 1f, 1f), 6), center.x, center.y + .15, center.z, 1, 0, 0, 0, 0, true);
 

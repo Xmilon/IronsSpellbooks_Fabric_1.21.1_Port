@@ -547,11 +547,6 @@ public class Utils {
         return a.add(b.subtract(a).scale(f));
     }
 
-    @Deprecated(forRemoval = true)
-    public static boolean shouldHealEntity(LivingEntity healer, LivingEntity target) {
-        return shouldHealEntity((Entity) healer, (Entity) target);
-    }
-
     public static boolean shouldHealEntity(Entity healer, Entity target) {
         if (healer instanceof NeutralMob neutralMob && target instanceof LivingEntity livingEntity && neutralMob.isAngryAt(livingEntity)) {
             return false;

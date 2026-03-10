@@ -26,7 +26,7 @@ public class AlchemistCauldronAdvancedHandler implements ISimpleRecipeManagerPlu
         if (stack == null || Minecraft.getInstance().level == null) {
             return false;
         }
-        if (ServerConfigs.ALLOW_CAULDRON_BREWING.get() && stack.has(DataComponents.POTION_CONTENTS)) {
+        if (ServerConfigs.safeGet(ServerConfigs.ALLOW_CAULDRON_BREWING) && stack.has(DataComponents.POTION_CONTENTS)) {
             return true;
         }
         var m = Minecraft.getInstance().level.getRecipeManager();
@@ -39,7 +39,7 @@ public class AlchemistCauldronAdvancedHandler implements ISimpleRecipeManagerPlu
         if (stack == null || Minecraft.getInstance().level == null) {
             return false;
         }
-        if (ServerConfigs.ALLOW_CAULDRON_BREWING.get() && stack.has(DataComponents.POTION_CONTENTS)) {
+        if (ServerConfigs.safeGet(ServerConfigs.ALLOW_CAULDRON_BREWING) && stack.has(DataComponents.POTION_CONTENTS)) {
             return true;
         }
         var m = Minecraft.getInstance().level.getRecipeManager();
@@ -72,7 +72,7 @@ public class AlchemistCauldronAdvancedHandler implements ISimpleRecipeManagerPlu
         var fluidConversion = manager.getAllRecipesFor(RecipeRegistry.ALCHEMIST_CAULDRON_EMPTY_TYPE.get()).stream().map(RecipeHolder::value).filter(emptyAlchemistCauldronRecipe -> ItemStack.isSameItemSameComponents(emptyAlchemistCauldronRecipe.result(), stack))
                 .map(EmptyAlchemistCauldronRecipe::fluid).findFirst();
         if (fluidConversion.isEmpty()) {
-            if (ServerConfigs.ALLOW_CAULDRON_BREWING.get() && !PotionFluid.from(stack).isEmpty()) {
+            if (ServerConfigs.safeGet(ServerConfigs.ALLOW_CAULDRON_BREWING) && !PotionFluid.from(stack).isEmpty()) {
                 fluidConversion = Optional.of(PotionFluid.from(stack));
             }
         }

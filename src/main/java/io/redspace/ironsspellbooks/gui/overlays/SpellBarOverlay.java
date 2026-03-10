@@ -55,7 +55,7 @@ public class SpellBarOverlay implements LayeredDraw.Layer {
         }
         var screenWidth = guiHelper.guiWidth();
         var screenHeight = guiHelper.guiHeight();
-        ManaBarOverlay.Display displayMode = ClientConfigs.SPELL_BAR_DISPLAY.get();
+        ManaBarOverlay.Display displayMode = ClientConfigs.safeGet(ClientConfigs.SPELL_BAR_DISPLAY);
         if (displayMode == ManaBarOverlay.Display.Never) {
             return;
         } else if (displayMode == ManaBarOverlay.Display.Contextual) {
@@ -84,9 +84,9 @@ public class SpellBarOverlay implements LayeredDraw.Layer {
         //System.out.println("SpellBarDisplay: Holding Spellbook");
 
         int centerX, centerY;
-        int configOffsetY = ClientConfigs.SPELL_BAR_Y_OFFSET.get();
-        int configOffsetX = ClientConfigs.SPELL_BAR_X_OFFSET.get();
-        Anchor anchor = ClientConfigs.SPELL_BAR_ANCHOR.get();
+        int configOffsetY = ClientConfigs.safeGet(ClientConfigs.SPELL_BAR_Y_OFFSET);
+        int configOffsetX = ClientConfigs.safeGet(ClientConfigs.SPELL_BAR_X_OFFSET);
+        Anchor anchor = ClientConfigs.safeGet(ClientConfigs.SPELL_BAR_ANCHOR);
         if (anchor == Anchor.Hotbar) {
             // Align from the first hotbar slot and shift right to stay clear of chat.
             centerX = (screenWidth / 2 - 91) - 120;

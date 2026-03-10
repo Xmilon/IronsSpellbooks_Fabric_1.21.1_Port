@@ -454,7 +454,7 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
         boolean success = true;
         Optional<ItemStack> byproduct = Optional.empty();
         if (itemStack.is(ItemRegistry.SCROLL.get()) && fluidInventory.contains(Tags.Fluids.WATER, 250)) {
-            if (Utils.random.nextFloat() < ServerConfigs.SCROLL_RECYCLE_CHANCE.get()) {
+            if (Utils.random.nextFloat() < ServerConfigs.safeGet(ServerConfigs.SCROLL_RECYCLE_CHANCE)) {
                 fluidInventory.drain(new FluidStack(Fluids.WATER, 250), IFluidHandler.FluidAction.EXECUTE);
                 fluidInventory.fill(new FluidStack(getInkFromScroll(itemStack).fluid(), 250), IFluidHandler.FluidAction.EXECUTE);
             } else {
@@ -533,7 +533,7 @@ public class AlchemistCauldronTile extends BlockEntity implements WorldlyContain
     }
 
     public boolean isBrewable(ItemStack itemStack) {
-        return ServerConfigs.ALLOW_CAULDRON_BREWING.get() && this.level != null && level.potionBrewing().isIngredient(itemStack);
+        return ServerConfigs.safeGet(ServerConfigs.ALLOW_CAULDRON_BREWING) && this.level != null && level.potionBrewing().isIngredient(itemStack);
     }
 
     public static InkItem getInkFromScroll(ItemStack scrollStack) {

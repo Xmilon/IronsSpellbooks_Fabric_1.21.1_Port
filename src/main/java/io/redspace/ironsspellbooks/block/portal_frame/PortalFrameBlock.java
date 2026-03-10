@@ -167,7 +167,7 @@ public class PortalFrameBlock extends BaseEntityBlock {
                 PortalFrameBlockEntity tile = portal.get();
                 int color = dyeItem.getDyeColor().getTextureDiffuseColor();
                 if (tile.isPortalConnected() && tile.getColor() != color) {
-                    if (!ServerConfigs.PORTAL_FRAME_RESTRICT_DYE.get() || tile.getOwnerUUID() == null || player.getUUID().equals(tile.getOwnerUUID())) {
+                    if (!ServerConfigs.safeGet(ServerConfigs.PORTAL_FRAME_RESTRICT_DYE) || tile.getOwnerUUID() == null || player.getUUID().equals(tile.getOwnerUUID())) {
                         if (!player.getAbilities().instabuild) {
                             pStack.shrink(1);
                         }

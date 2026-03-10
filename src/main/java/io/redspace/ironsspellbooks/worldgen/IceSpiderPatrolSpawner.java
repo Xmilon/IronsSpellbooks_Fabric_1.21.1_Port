@@ -38,7 +38,7 @@ public class IceSpiderPatrolSpawner implements CustomSpawner {
 
     @Override
     public int tick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies) {
-        if (!spawnEnemies || !ServerConfigs.ICE_SPIDER_PATROLS.get()) {
+        if (!spawnEnemies || !ServerConfigs.safeGet(ServerConfigs.ICE_SPIDER_PATROLS)) {
             return 0;
         }
         int playercount = level.players().size();

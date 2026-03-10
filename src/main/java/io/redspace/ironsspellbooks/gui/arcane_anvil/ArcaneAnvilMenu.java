@@ -82,7 +82,7 @@ public class ArcaneAnvilMenu extends ItemCombinerMenu {
         ItemStack modifierItemStack = inputSlots.getItem(1);
         if (!baseItemStack.isEmpty() && !modifierItemStack.isEmpty()) {
             //Scroll Merging
-            if (ServerConfigs.SCROLL_MERGING.get() && baseItemStack.getItem() instanceof Scroll && modifierItemStack.getItem() instanceof InkItem inkItem/*Scroll*/) {
+            if (ServerConfigs.safeGet(ServerConfigs.SCROLL_MERGING) && baseItemStack.getItem() instanceof Scroll && modifierItemStack.getItem() instanceof InkItem inkItem/*Scroll*/) {
                 var spell1 = ISpellContainer.get(baseItemStack).getSpellAtIndex(0);
                 if (spell1.getLevel() < spell1.getSpell().getMaxLevel()) {
                     var baseRarity = spell1.getRarity();
@@ -138,7 +138,7 @@ public class ArcaneAnvilMenu extends ItemCombinerMenu {
                 ISpellContainer.set(result, spellContainer.toImmutable());
             }
             //Upgrade System
-            else if (Utils.canBeUpgraded(baseItemStack) && UpgradeData.getUpgradeData(baseItemStack).getTotalUpgrades() < ServerConfigs.MAX_UPGRADES.get() && modifierItemStack.has(ComponentRegistry.UPGRADE_ORB_TYPE)) {
+            else if (Utils.canBeUpgraded(baseItemStack) && UpgradeData.getUpgradeData(baseItemStack).getTotalUpgrades() < ServerConfigs.safeGet(ServerConfigs.MAX_UPGRADES) && modifierItemStack.has(ComponentRegistry.UPGRADE_ORB_TYPE)) {
                 var upgradeKey = modifierItemStack.get(ComponentRegistry.UPGRADE_ORB_TYPE);
                 var holderopt = this.player.registryAccess().lookup(upgradeKey.registryKey()).flatMap(registry -> registry.get(upgradeKey));
                 if (holderopt.isPresent()) {

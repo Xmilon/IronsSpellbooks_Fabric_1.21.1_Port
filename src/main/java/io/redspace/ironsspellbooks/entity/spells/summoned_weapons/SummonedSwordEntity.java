@@ -3,6 +3,7 @@ package io.redspace.ironsspellbooks.entity.spells.summoned_weapons;
 import io.redspace.ironsspellbooks.entity.mobs.goals.melee.AttackAnimationData;
 import io.redspace.ironsspellbooks.entity.mobs.wizards.GenericAnimatedWarlockAttackGoal;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -32,7 +33,7 @@ public class SummonedSwordEntity extends SummonedWeaponEntity {
 
     public SummonedSwordEntity(Level level, LivingEntity owner) {
         this(EntityRegistry.SUMMONED_SWORD.get(), level);
-        setSummoner(owner);
+        SummonManager.setOwner(this, owner);
     }
 
     @Override

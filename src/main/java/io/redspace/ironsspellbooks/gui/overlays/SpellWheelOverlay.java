@@ -92,10 +92,10 @@ public class SpellWheelOverlay implements LayeredDraw.Layer {
         PoseStack poseStack = guiHelper.pose();
         poseStack.pushPose();
         float guiScale = 1f;
-        if (ClientConfigs.SPELL_WHEEL_CONSISTENT_SIZE.get()) {
+        if (ClientConfigs.safeGet(ClientConfigs.SPELL_WHEEL_CONSISTENT_SIZE)) {
             float invertedGuiScaleFactor = (float) (1 / minecraft.getWindow().getGuiScale());
             float physicalScaleFactor = Math.min(minecraft.getWindow().getScreenWidth() / 1920f, minecraft.getWindow().getScreenHeight() / 1080f);
-            guiScale = invertedGuiScaleFactor * physicalScaleFactor * 3 * ClientConfigs.SPELL_WHEEL_SCALE.get().floatValue();
+            guiScale = invertedGuiScaleFactor * physicalScaleFactor * 3 * ClientConfigs.safeGet(ClientConfigs.SPELL_WHEEL_SCALE).floatValue();
         }
         int centerX = screenWidth / 2;
         int centerY = screenHeight / 2;

@@ -10,6 +10,7 @@ import io.redspace.ironsspellbooks.particle.BlastwaveParticleOptions;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.registries.SoundRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -58,7 +59,7 @@ public class SummonedClaymoreEntity extends SummonedWeaponEntity {
 
     public SummonedClaymoreEntity(Level level, LivingEntity owner) {
         this(EntityRegistry.SUMMONED_CLAYMORE.get(), level);
-        setSummoner(owner);
+        SummonManager.setOwner(this, owner);
     }
 
     @Override

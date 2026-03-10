@@ -53,6 +53,7 @@ dependencies {
 	modImplementation "dev.kosmx.player-anim:player-animation-lib-fabric:2.0.4+1.21.1"
 	modRuntimeOnly fileTree(dir: "libs", include: ["*.jar"])
 	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+	compileOnly "com.google.j2objc:j2objc-annotations:2.8"
 	compileOnly "com.electronwill.night-config:core:3.8.1"
 	compileOnly "com.electronwill.night-config:toml:3.8.1"
 	

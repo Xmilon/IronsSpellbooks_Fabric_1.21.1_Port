@@ -38,7 +38,7 @@ public class ClientShieldHelper {
     }
 
     public static synchronized List<VoxelShape> getShieldsFor(AABB boundingBox) {
-        if (trackedEntities.isEmpty() || !ClientConfigs.SHIELD_PARTICLE_COLLISIONS.get()) {
+        if (trackedEntities.isEmpty() || !ClientConfigs.safeGet(ClientConfigs.SHIELD_PARTICLE_COLLISIONS)) {
             return List.of();
         } else {
             List<VoxelShape> shieldCollisions = new ArrayList<>();

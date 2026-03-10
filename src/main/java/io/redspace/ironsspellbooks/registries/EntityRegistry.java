@@ -1,7 +1,6 @@
 package io.redspace.ironsspellbooks.registries;
 
 import io.redspace.ironsspellbooks.IronsSpellbooks;
-import io.redspace.ironsspellbooks.entity.VisualFallingBlockEntity;
 import io.redspace.ironsspellbooks.entity.mobs.*;
 import io.redspace.ironsspellbooks.entity.mobs.dead_king_boss.DeadKingBoss;
 import io.redspace.ironsspellbooks.entity.mobs.dead_king_boss.DeadKingCorpseEntity;
@@ -436,13 +435,6 @@ public class EntityRegistry {
                     .clientTrackingRange(64)
                     .build(null));
 
-
-    public static final DeferredHolder<EntityType<?>, EntityType<VisualFallingBlockEntity>> FALLING_BLOCK =
-            ENTITIES.register("visual_falling_block", () -> EntityType.Builder.<VisualFallingBlockEntity>of(VisualFallingBlockEntity::new, MobCategory.MISC)
-                    .sized(0.98F, 0.98F)
-                    .clientTrackingRange(10)
-                    .updateInterval(20)
-                    .build(null));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GuidingBoltProjectile>> GUIDING_BOLT =
             ENTITIES.register("guiding_bolt", () -> EntityType.Builder.<GuidingBoltProjectile>of(GuidingBoltProjectile::new, MobCategory.MISC)

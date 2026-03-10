@@ -89,7 +89,7 @@ public class MagmaBombSpell extends AbstractSpell {
     }
 
     public float getDamage(int spellLevel, LivingEntity caster) {
-        return baseSpellPower * getEntityPowerMultiplier(caster);
+        return getBaseSpellPowerWithBonuses(spellLevel, caster) * getEntityPowerMultiplier(caster);
     }
 
     public float getAoeDamage(int spellLevel, LivingEntity caster) {

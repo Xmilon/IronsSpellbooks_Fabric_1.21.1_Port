@@ -17,6 +17,7 @@ import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.RecastInstance;
 import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
+import io.redspace.ironsspellbooks.content.ContentPackManager;
 import io.redspace.ironsspellbooks.config.ServerConfigs;
 import io.redspace.ironsspellbooks.damage.SpellDamageSource;
 import io.redspace.ironsspellbooks.network.SyncManaPacket;
@@ -214,14 +215,28 @@ public abstract class AbstractSpell {
         double entitySchoolPowerModifier = 1;
 
         float configPowerModifier = SpellConfigManager.getSpellConfigValue(this, SpellConfigParameter.POWER_MULTIPLIER).floatValue();
+        LivingEntity livingEntity = sourceEntity instanceof LivingEntity entity ? entity : null;
+        float basePower = getBaseSpellPowerWithBonuses(spellLevel, livingEntity);
         //int level = getLevel(spellLevel, null);
-        if (sourceEntity instanceof LivingEntity livingEntity) {
+        if (livingEntity != null) {
             //level = getLevel(spellLevel, livingEntity);
             entitySpellPowerModifier = (float) AttributeRegistry.getValueOrDefault(livingEntity, AttributeRegistry.SPELL_POWER, 1.0D);
             entitySchoolPowerModifier = this.getSchoolType().getPowerFor(livingEntity);
         }
 
-        return (float) ((baseSpellPower + spellPowerPerLevel * (spellLevel - 1)) * entitySpellPowerModifier * entitySchoolPowerModifier * configPowerModifier);
+        return (float) (basePower * entitySpellPowerModifier * entitySchoolPowerModifier * configPowerModifier);
+    }
+
+    public float getBaseSpellPowerWithBonuses(int spellLevel, @Nullable LivingEntity sourceEntity) {
+        float basePower = baseSpellPower + spellPowerPerLevel * (spellLevel - 1);
+        double baseMultiplier = ContentPackManager.INSTANCE.getBasePowerMultiplier(sourceEntity, getSchoolType());
+        return (float) (basePower * baseMultiplier);
+    }
+
+    public float getSpellPowerNoEntityModifiers(int spellLevel, @Nullable LivingEntity sourceEntity) {
+        float basePower = getBaseSpellPowerWithBonuses(spellLevel, sourceEntity);
+        float configPowerModifier = SpellConfigManager.getSpellConfigValue(this, SpellConfigParameter.POWER_MULTIPLIER).floatValue();
+        return basePower * configPowerModifier;
     }
 
     /**

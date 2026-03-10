@@ -1231,6 +1231,8 @@
   "affix.irons_spellbooks:sword/attribute/mana_regen.suffix": "of the Mana-tapped",
   "curios.identifier.spellbook": "Spell Book",
   "curios.modifiers.spellbook": "When equipped as Spell Book:",
+  "accessories.slot.irons_spellbooks.spellbook": "Spell Book",
+  "accessories.slot.spellbook": "Spell Book",
 
   "lore.citadel_book.title": "Citadel Tome",
   "lore.citadel_book.construction_ledger": "A ledger that seems to log transactions of construction materials, containing hundreds of shipments of various building materials...",

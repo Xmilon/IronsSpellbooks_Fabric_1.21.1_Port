@@ -147,7 +147,7 @@ public class TeleportSpell extends AbstractSpell {
     }
 
     private float getDistance(int spellLevel, LivingEntity sourceEntity) {
-        return (float) (Utils.softCapFormula(getEntityPowerMultiplier(sourceEntity)) * getSpellPower(spellLevel, null));
+        return (float) (Utils.softCapFormula(getEntityPowerMultiplier(sourceEntity)) * getSpellPowerNoEntityModifiers(spellLevel, sourceEntity));
     }
 
     public static class TeleportData implements ICastData {

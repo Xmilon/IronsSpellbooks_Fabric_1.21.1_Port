@@ -10,6 +10,7 @@ import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +19,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -50,6 +52,8 @@ public class MagicData {
     public static final String MANA = "mana";
     public static final String COOLDOWNS = "cooldowns";
     public static final String RECASTS = "recasts";
+    public static final String SCHOOL_CAST_COUNTS = "school_cast_counts";
+    public static final String SCHOOL_POWER_BONUSES = "school_power_bonuses";
 
     /********* MANA *******************************************************/
 
@@ -250,6 +254,45 @@ public class MagicData {
         return isMob ? new PlayerRecasts() : this.playerRecasts;
     }
 
+    /********* SPELL SCHOOL MASTERY *******************************************************/
+
+    private final Map<String, Integer> schoolCastCounts = new HashMap<>();
+    private final Map<String, Double> schoolPowerBonuses = new HashMap<>();
+
+    public int getSchoolCastCount(SchoolType schoolType) {
+        if (schoolType == null || schoolType.getId() == null) {
+            return 0;
+        }
+        return schoolCastCounts.getOrDefault(schoolType.getId().toString(), 0);
+    }
+
+    public double getSchoolPowerBonus(SchoolType schoolType) {
+        if (schoolType == null || schoolType.getId() == null) {
+            return 0d;
+        }
+        return schoolPowerBonuses.getOrDefault(schoolType.getId().toString(), 0d);
+    }
+
+    public int incrementSchoolCastCount(SchoolType schoolType) {
+        if (schoolType == null || schoolType.getId() == null) {
+            return 0;
+        }
+        String key = schoolType.getId().toString();
+        int next = schoolCastCounts.getOrDefault(key, 0) + 1;
+        schoolCastCounts.put(key, next);
+        return next;
+    }
+
+    public double addSchoolPowerBonus(SchoolType schoolType, double bonusDelta) {
+        if (schoolType == null || schoolType.getId() == null) {
+            return 0d;
+        }
+        String key = schoolType.getId().toString();
+        double next = schoolPowerBonuses.getOrDefault(key, 0d) + bonusDelta;
+        schoolPowerBonuses.put(key, next);
+        return next;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public void setPlayerRecasts(PlayerRecasts playerRecasts) {
         this.playerRecasts = playerRecasts;
@@ -289,6 +332,22 @@ public class MagicData {
             compound.put(RECASTS, playerRecasts.saveNBTData(provider));
         }
 
+        if (!schoolCastCounts.isEmpty()) {
+            CompoundTag castTag = new CompoundTag();
+            for (var entry : schoolCastCounts.entrySet()) {
+                castTag.putInt(entry.getKey(), entry.getValue());
+            }
+            compound.put(SCHOOL_CAST_COUNTS, castTag);
+        }
+
+        if (!schoolPowerBonuses.isEmpty()) {
+            CompoundTag bonusTag = new CompoundTag();
+            for (var entry : schoolPowerBonuses.entrySet()) {
+                bonusTag.putDouble(entry.getKey(), entry.getValue());
+            }
+            compound.put(SCHOOL_POWER_BONUSES, bonusTag);
+        }
+
         getSyncedData().saveNBTData(compound, provider);
     }
 
@@ -303,6 +362,22 @@ public class MagicData {
         listTag = (ListTag) compound.get(RECASTS);
         if (listTag != null && !listTag.isEmpty()) {
             playerRecasts.loadNBTData(listTag, provider);
+        }
+
+        if (compound.contains(SCHOOL_CAST_COUNTS, Tag.TAG_COMPOUND)) {
+            CompoundTag castTag = compound.getCompound(SCHOOL_CAST_COUNTS);
+            schoolCastCounts.clear();
+            for (String key : castTag.getAllKeys()) {
+                schoolCastCounts.put(key, castTag.getInt(key));
+            }
+        }
+
+        if (compound.contains(SCHOOL_POWER_BONUSES, Tag.TAG_COMPOUND)) {
+            CompoundTag bonusTag = compound.getCompound(SCHOOL_POWER_BONUSES);
+            schoolPowerBonuses.clear();
+            for (String key : bonusTag.getAllKeys()) {
+                schoolPowerBonuses.put(key, bonusTag.getDouble(key));
+            }
         }
 
         getSyncedData().loadNBTData(compound, provider);

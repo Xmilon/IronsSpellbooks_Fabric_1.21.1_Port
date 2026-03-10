@@ -19,6 +19,7 @@ import io.redspace.ironsspellbooks.registries.BlockRegistry;
 import io.redspace.ironsspellbooks.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.registries.MenuRegistry;
+import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
 import io.redspace.ironsspellbooks.registries.ParticleRegistry;
 import io.redspace.ironsspellbooks.network.CauldronVisualSyncPacket;
 import io.redspace.ironsspellbooks.render.animation.AnimationHelper;
@@ -36,6 +37,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -43,6 +45,7 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.component.DataComponents;
@@ -75,6 +78,7 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         registerHudOverlays();
         registerModelLayers();
         registerEntityRenderers();
+        registerPlayerRenderLayers();
         registerFallbackEntityRenderers();
         registerBlockEntityRenderers();
         registerBlockRenderLayers();
@@ -264,6 +268,14 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         registerEntityRenderer(EntityRegistry.ICE_TOMB.get(), io.redspace.ironsspellbooks.entity.spells.ice_tomb.IceTombRenderer::new);
         registerEntityRenderer(EntityRegistry.SNOWBALL.get(), io.redspace.ironsspellbooks.entity.spells.snowball.SnowballRenderer::new);
         registerEntityRenderer(EntityRegistry.THROWN_SPEAR.get(), io.redspace.ironsspellbooks.entity.spells.thrown_spear.ThrownSpearRenderer::new);
+    }
+
+    private static void registerPlayerRenderLayers() {
+        net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
+            if (entityRenderer instanceof PlayerRenderer playerRenderer) {
+                registrationHelper.register(new io.redspace.ironsspellbooks.render.EnergySwirlLayer.Vanilla(playerRenderer, io.redspace.ironsspellbooks.render.EnergySwirlLayer.CHARGE_TEXTURE, MobEffectRegistry.CHARGED));
+            }
+        });
     }
 
     private static void registerModelLayer(ModelLayerLocation location, java.util.function.Supplier<net.minecraft.client.model.geom.builders.LayerDefinition> supplier) {

@@ -86,6 +86,10 @@ public class SchoolType {
         return focus;
     }
 
+    public Holder<Attribute> getPowerAttribute() {
+        return powerAttribute;
+    }
+
     public Vector3f getTargetingColor() {
         return Utils.deconstructRGB(this.displayStyle.getColor().getValue());
     }

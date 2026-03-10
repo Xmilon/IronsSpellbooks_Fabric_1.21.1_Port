@@ -5,6 +5,9 @@ import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.api.config.SpellConfigManager;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.compat.CompatHandler;
+import io.redspace.ironsspellbooks.content.ContentPackManager;
+import io.redspace.ironsspellbooks.content.ContentPackEvents;
+import io.redspace.ironsspellbooks.content.SpellSchoolMasteryPack;
 import io.redspace.ironsspellbooks.data.IronsDataStorage;
 import io.redspace.ironsspellbooks.effect.guiding_bolt.GuidingBoltManager;
 import io.redspace.ironsspellbooks.network.SyncManaPacket;
@@ -17,6 +20,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -32,6 +36,7 @@ public class ModSetup {
     public static void setup() {
         Messages.register();
         CompatHandler.init();
+        NeoForge.EVENT_BUS.register(ContentPackEvents.class);
 
         // Drive server-level magic and pocket-dimension ticking on Fabric.
         ServerTickEvents.START_WORLD_TICK.register(world -> {
@@ -111,5 +116,8 @@ public class ModSetup {
         magicData.getPlayerCooldowns().syncToPlayer(serverPlayer);
         magicData.getPlayerRecasts().syncAllToPlayer();
         PacketDistributor.sendToPlayer(serverPlayer, new SyncManaPacket(magicData, serverPlayer));
+        if (ContentPackManager.INSTANCE.isEnabled(SpellSchoolMasteryPack.ID)) {
+            SpellSchoolMasteryPack.applyAllBonuses(serverPlayer);
+        }
     }
 }

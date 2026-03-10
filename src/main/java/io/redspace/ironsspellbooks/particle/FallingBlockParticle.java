@@ -25,50 +25,48 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(Dist.CLIENT)
 public class FallingBlockParticle extends TextureSheetParticle {
     private final BlockState blockState;
     private final boolean particlesOnImpact;
     private final BlockPos originalPos;
+    private static final List<Renderable> toRender = new ArrayList<>();
 
-    @SubscribeEvent
-    public static void globalrender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-            return;
-        }
-        var dispatcher = Minecraft.getInstance().getBlockRenderer();
-        var level = Minecraft.getInstance().level;
-        if (level == null) {
-            toRender.clear();
-            return;
-        }
-        synchronized (toRender) {
-            if (toRender.isEmpty()) {
+    static {
+        WorldRenderEvents.AFTER_ENTITIES.register(context -> {
+            var dispatcher = Minecraft.getInstance().getBlockRenderer();
+            var level = Minecraft.getInstance().level;
+            if (level == null) {
+                toRender.clear();
                 return;
             }
-            var bufs = Minecraft.getInstance().renderBuffers();
-            var buf = bufs.bufferSource();
-            for (Renderable particle : toRender) {
-                PoseStack poseStack = event.getPoseStack();
-                poseStack.pushPose();
-                poseStack.translate((float) particle.relativePos.x, (float) particle.relativePos.y, (float) particle.relativePos.z);
-                dispatcher.renderSingleBlock(particle.state, poseStack, buf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
-                poseStack.popPose();
-
+            synchronized (toRender) {
+                if (toRender.isEmpty()) {
+                    return;
+                }
+                var bufs = Minecraft.getInstance().renderBuffers();
+                var buf = bufs.bufferSource();
+                context.matrixStack().pushPose();
+                for (Renderable particle : toRender) {
+                    context.matrixStack().pushPose();
+                    context.matrixStack().translate(particle.relativePos.x, particle.relativePos.y, particle.relativePos.z);
+                    dispatcher.renderSingleBlock(particle.state, context.matrixStack(), buf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                    context.matrixStack().popPose();
+                }
+                context.matrixStack().popPose();
+                toRender.clear();
             }
-            toRender.clear();
-        }
+        });
     }
 
     record Renderable(BlockPos worldPos, BlockPos originalPos, Vec3 relativePos, BlockState state) {
     }
-
-    private static final List<Renderable> toRender = new ArrayList<>();
 
     FallingBlockParticle(ClientLevel pLevel, double pX, double pY, double pZ, double xd, double yd, double zd, FallingBlockParticleOption options) {
         super(pLevel, pX, pY, pZ, 0, 0, 0);

@@ -1,9 +1,11 @@
 package io.redspace.ironsspellbooks.data;
 
+import io.redspace.ironsspellbooks.capabilities.magic.PocketDimensionManager;
 import io.redspace.ironsspellbooks.capabilities.magic.PortalManager;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
+import io.redspace.ironsspellbooks.content.ContentPackManager;
+import io.redspace.ironsspellbooks.content.SpellSchoolMasteryStore;
 import io.redspace.ironsspellbooks.effect.guiding_bolt.GuidingBoltManager;
-import io.redspace.ironsspellbooks.capabilities.magic.PocketDimensionManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -30,6 +32,8 @@ public class IronsDataStorage extends SavedData {
         tag.put("PortalManager", PortalManager.INSTANCE.serializeNBT(pRegistries));
         tag.put("PocketDimensionIdManager", PocketDimensionManager.INSTANCE.serializeNBT(pRegistries));
         tag.put("SummonManager", SummonManager.INSTANCE.serializeNBT(pRegistries));
+        tag.put("ContentPackManager", ContentPackManager.INSTANCE.serializeNBT(pRegistries));
+        tag.put("SpellSchoolMasteryStore", SpellSchoolMasteryStore.INSTANCE.serializeNBT(pRegistries));
         return tag;
     }
 
@@ -46,6 +50,12 @@ public class IronsDataStorage extends SavedData {
         }
         if (tag.contains("SummonManager", Tag.TAG_COMPOUND)) {
             SummonManager.INSTANCE.deserializeNBT(pRegistries, tag.getCompound("SummonManager"));
+        }
+        if (tag.contains("ContentPackManager", Tag.TAG_COMPOUND)) {
+            ContentPackManager.INSTANCE.deserializeNBT(pRegistries, tag.getCompound("ContentPackManager"));
+        }
+        if (tag.contains("SpellSchoolMasteryStore", Tag.TAG_COMPOUND)) {
+            SpellSchoolMasteryStore.INSTANCE.deserializeNBT(pRegistries, tag.getCompound("SpellSchoolMasteryStore"));
         }
 
         return new IronsDataStorage();

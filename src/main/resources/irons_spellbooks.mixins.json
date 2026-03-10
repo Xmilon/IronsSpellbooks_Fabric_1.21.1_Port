@@ -28,6 +28,7 @@
   "client": [
     "ClientBookAccessMixin",
     "ClientEntityMixin",
+    "ConfirmExperimentalFeaturesScreenMixin",
     "EntityRendererMixin",
     "GuiMixin",
     "ItemRendererMixin",

@@ -220,7 +220,7 @@ public abstract class AbstractSpell {
         //int level = getLevel(spellLevel, null);
         if (livingEntity != null) {
             //level = getLevel(spellLevel, livingEntity);
-            entitySpellPowerModifier = (float) AttributeRegistry.getValueOrDefault(livingEntity, AttributeRegistry.SPELL_POWER, 1.0D);
+            entitySpellPowerModifier = (float) AttributeRegistry.getValueOrDefaultWithSpellbookFallback(livingEntity, AttributeRegistry.SPELL_POWER, 1.0D);
             entitySchoolPowerModifier = this.getSchoolType().getPowerFor(livingEntity);
         }
 
@@ -251,7 +251,7 @@ public abstract class AbstractSpell {
         if (entity == null) {
             return base;
         }
-        var entitySpellPowerModifier = (float) AttributeRegistry.getValueOrDefault(entity, AttributeRegistry.SPELL_POWER, 1.0D);
+        var entitySpellPowerModifier = (float) AttributeRegistry.getValueOrDefaultWithSpellbookFallback(entity, AttributeRegistry.SPELL_POWER, 1.0D);
         var entitySchoolPowerModifier = this.getSchoolType().getPowerFor(entity);
         return (float) (base * entitySpellPowerModifier * entitySchoolPowerModifier);
     }
@@ -328,6 +328,7 @@ public abstract class AbstractSpell {
 
         var event = new SpellOnCastEvent(serverPlayer, this.getSpellId(), spellLevel, getManaCost(spellLevel), this.getSchoolType(), castSource);
         NeoForge.EVENT_BUS.post(event);
+        magicData.incrementSchoolCastCount(event.getSchoolType());
         if (castSource.consumesMana() && !playerAlreadyHasRecast && !(serverPlayer.isCreative() && !ServerConfigs.CREATIVE_MANA_COST.get())) {
             var newMana = Math.max(magicData.getMana() - event.getManaCost(), 0);
             magicData.setMana(newMana);

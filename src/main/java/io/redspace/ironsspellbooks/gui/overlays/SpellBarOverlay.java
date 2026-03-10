@@ -90,7 +90,7 @@ public class SpellBarOverlay implements LayeredDraw.Layer {
         if (anchor == Anchor.Hotbar) {
             // Align from the first hotbar slot and shift right to stay clear of chat.
             centerX = (screenWidth / 2 - 91) - 120;
-            centerY = screenHeight - 45;
+            centerY = screenHeight - 78;
         } else {
             centerX = screenWidth * anchor.m1;
             centerY = screenHeight * anchor.m2;

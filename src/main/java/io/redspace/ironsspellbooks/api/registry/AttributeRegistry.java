@@ -5,6 +5,7 @@ import io.redspace.ironsspellbooks.api.attribute.MagicPercentAttribute;
 import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.compat.TrinketsSlots;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketsApi;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
@@ -22,7 +24,9 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotContext;
+import io.redspace.ironsspellbooks.compat.trinkets.TrinketSlotResult;
 import io.redspace.ironsspellbooks.compat.trinkets.ITrinketItem;
+import io.redspace.ironsspellbooks.item.SpellBook;
 
 
 @EventBusSubscriber(modid = IronsSpellbooks.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -77,11 +81,33 @@ public class AttributeRegistry {
     }
 
     public static double getValueOrDefault(LivingEntity entity, DeferredHolder<Attribute, Attribute> attribute, double fallback) {
-        if (entity == null) {
+        return getValueOrDefault(entity, (net.minecraft.core.Holder<Attribute>) attribute, fallback);
+    }
+
+    public static double getValueOrDefault(LivingEntity entity, net.minecraft.core.Holder<Attribute> attribute, double fallback) {
+        if (entity == null || attribute == null) {
             return fallback;
         }
         AttributeInstance instance = entity.getAttribute(attribute);
         return instance != null ? instance.getValue() : fallback;
+    }
+
+    public static double getValueOrDefaultWithSpellbookFallback(LivingEntity entity, DeferredHolder<Attribute, Attribute> attribute, double fallback) {
+        return getValueOrDefaultWithSpellbookFallback(entity, (net.minecraft.core.Holder<Attribute>) attribute, fallback);
+    }
+
+    public static double getValueOrDefaultWithSpellbookFallback(LivingEntity entity, net.minecraft.core.Holder<Attribute> attribute, double fallback) {
+        double value = getValueOrDefault(entity, attribute, fallback);
+        if (!(entity instanceof Player player)) {
+            return value;
+        }
+        if (!player.level().isClientSide) {
+            return value;
+        }
+        if (Double.compare(value, fallback) != 0) {
+            return value;
+        }
+        return getSpellbookAttributeFallback(player, attribute, fallback);
     }
 
     public static double getMaxManaWithFallback(LivingEntity entity) {
@@ -153,5 +179,42 @@ public class AttributeRegistry {
         }
 
         return Math.max(100.0D, (base + additive) * (1.0D + multipliedBase) * (1.0D + multipliedTotal));
+    }
+
+    private static double getSpellbookAttributeFallback(Player player, net.minecraft.core.Holder<Attribute> attribute, double fallback) {
+        TrinketSlotResult result = TrinketsApi.getTrinketsInventory(player)
+                .map(inv -> inv.findTrinkets(stack -> stack.getItem() instanceof SpellBook).stream()
+                        .filter(entry -> TrinketsSlots.SPELLBOOK_SLOT.equals(entry.slotContext().identifier()))
+                        .findFirst()
+                        .orElse(null))
+                .orElse(null);
+        if (result == null) {
+            return fallback;
+        }
+        ItemStack stack = result.stack();
+        if (stack.isEmpty() || !(stack.getItem() instanceof ITrinketItem trinketItem)) {
+            return fallback;
+        }
+        var modifiers = trinketItem.getAttributeModifiers(result.slotContext(), IronsSpellbooks.id("client_spell_power_fallback"), stack);
+        var attrModifiers = modifiers.get(attribute);
+        if (attrModifiers == null || attrModifiers.isEmpty()) {
+            return fallback;
+        }
+        return applyAttributeModifiers(fallback, attrModifiers);
+    }
+
+    private static double applyAttributeModifiers(double base, Iterable<AttributeModifier> modifiers) {
+        double additive = 0.0D;
+        double multipliedBase = 0.0D;
+        double multipliedTotal = 0.0D;
+
+        for (AttributeModifier modifier : modifiers) {
+            switch (modifier.operation()) {
+                case ADD_VALUE -> additive += modifier.amount();
+                case ADD_MULTIPLIED_BASE -> multipliedBase += modifier.amount();
+                case ADD_MULTIPLIED_TOTAL -> multipliedTotal += modifier.amount();
+            }
+        }
+        return (base + additive) * (1.0D + multipliedBase) * (1.0D + multipliedTotal);
     }
 }

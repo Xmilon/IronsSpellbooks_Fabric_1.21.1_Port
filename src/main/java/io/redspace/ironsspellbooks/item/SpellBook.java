@@ -184,7 +184,6 @@ public class SpellBook extends CurioBaseItem implements ISpellbook, IPresetSpell
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
             return;
         }
-
-        SpellBookClientHooks.createGeoRenderer(consumer);
+        // Force spellbooks to use their flat item models instead of GeoItem rendering.
     }
 }

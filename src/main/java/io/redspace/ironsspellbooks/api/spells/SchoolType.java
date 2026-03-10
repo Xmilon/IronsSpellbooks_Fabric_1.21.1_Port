@@ -1,6 +1,7 @@
 package io.redspace.ironsspellbooks.api.spells;
 
 import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -57,8 +58,7 @@ public class SchoolType {
      * @return Returns raw power attribute value of the entity.
      */
     public double getPowerFor(LivingEntity livingEntity) {
-        AttributeInstance instance = livingEntity.getAttribute(powerAttribute);
-        return instance != null ? instance.getValue() : 1;
+        return AttributeRegistry.getValueOrDefaultWithSpellbookFallback(livingEntity, powerAttribute, 1.0D);
 
     }
 

@@ -37,6 +37,26 @@ public final class SpellSchoolMasteryStore {
         return dataByPlayer.get(uuid);
     }
 
+    public boolean ensureSchoolInitialized(UUID uuid, String name, String schoolId) {
+        if (schoolId == null || schoolId.isBlank()) {
+            return false;
+        }
+        PlayerMasteryData data = getOrCreate(uuid, name);
+        boolean changed = false;
+        if (!data.castCounts.containsKey(schoolId)) {
+            data.castCounts.put(schoolId, 0);
+            changed = true;
+        }
+        if (!data.powerBonuses.containsKey(schoolId)) {
+            data.powerBonuses.put(schoolId, 0d);
+            changed = true;
+        }
+        if (changed) {
+            markDirty();
+        }
+        return changed;
+    }
+
     public int incrementCast(UUID uuid, String name, String schoolId) {
         PlayerMasteryData data = getOrCreate(uuid, name);
         int next = data.castCounts.getOrDefault(schoolId, 0) + 1;

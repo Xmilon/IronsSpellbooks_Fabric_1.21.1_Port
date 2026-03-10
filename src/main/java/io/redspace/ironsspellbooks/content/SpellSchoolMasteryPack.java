@@ -122,6 +122,11 @@ public class SpellSchoolMasteryPack implements ContentPack {
             if (school.getId() == null) {
                 continue;
             }
+            SpellSchoolMasteryStore.INSTANCE.ensureSchoolInitialized(
+                    player.getUUID(),
+                    player.getGameProfile().getName(),
+                    school.getId().toString()
+            );
             double bonus = SpellSchoolMasteryStore.INSTANCE.getBonus(player.getUUID(), school.getId().toString());
             applyMasteryBonus(player, school, bonus);
         }

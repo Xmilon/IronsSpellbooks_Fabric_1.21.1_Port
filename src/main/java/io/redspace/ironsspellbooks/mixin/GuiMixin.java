@@ -3,6 +3,7 @@ package io.redspace.ironsspellbooks.mixin;
 import io.redspace.ironsspellbooks.config.ClientConfigs;
 import io.redspace.ironsspellbooks.gui.overlays.ScreenEffectsOverlay;
 import io.redspace.ironsspellbooks.gui.overlays.ManaBarOverlay;
+import io.redspace.ironsspellbooks.gui.overlays.SpellBarOverlay;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -19,6 +20,7 @@ public class GuiMixin {
     @Inject(method = "render", at = @At("HEAD"))
     public void irons_spellbooks$renderScreenEffectsFirstLayer(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         ScreenEffectsOverlay.instance.render(guiGraphics, deltaTracker);
+        SpellBarOverlay.instance.render(guiGraphics, deltaTracker);
     }
 
     //TODO: can't this be an event?

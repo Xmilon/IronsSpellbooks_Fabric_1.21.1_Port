@@ -178,7 +178,6 @@ public class IronsSpellbooksClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
             ScreenEffectsOverlay.instance.render(guiGraphics, deltaTracker);
             ManaBarOverlay.instance.render(guiGraphics, deltaTracker);
-            SpellBarOverlay.instance.render(guiGraphics, deltaTracker);
             ActiveSpellOverlay.instance.render(guiGraphics, deltaTracker);
             RecastOverlay.instance.render(guiGraphics, deltaTracker);
             SpellWheelOverlay.instance.render(guiGraphics, deltaTracker);

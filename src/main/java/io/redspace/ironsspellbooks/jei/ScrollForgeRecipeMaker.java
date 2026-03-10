@@ -5,6 +5,7 @@ import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
+import io.redspace.ironsspellbooks.util.ModTags;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -29,7 +30,7 @@ public final class ScrollForgeRecipeMaker {
     public static List<ScrollForgeRecipe> getRecipes(IVanillaRecipeFactory vanillaRecipeFactory, JeiPlugin.ItemFinder itemFinder) {
         var recipes = new ArrayList<ScrollForgeRecipe>();
         var paperInput = Ingredient.of(Items.PAPER);
-        var sortedInks = itemFinder.inkItems.stream()
+        var sortedInks = resolveInkItems(itemFinder).stream()
                 .sorted(Comparator
                         .comparing((Item ink) -> ((io.redspace.ironsspellbooks.item.InkItem) ink).getRarity().ordinal())
                         .thenComparing(ink -> BuiltInRegistries.ITEM.getKey(ink).toString()))
@@ -38,7 +39,10 @@ public final class ScrollForgeRecipeMaker {
         SchoolRegistry.REGISTRY.stream()
                 .sorted(Comparator.comparing(school -> school.getId().toString()))
                 .forEach(school -> {
-                    var focusInput = Ingredient.of(school.getFocus());
+                    var focusInput = resolveFocusIngredient(school.getFocus());
+                    if (focusInput.isEmpty()) {
+                        return;
+                    }
                     var spells = SpellRegistry.getSpellsForSchool(school).stream()
                             .sorted(Comparator.comparing(spell -> SpellRegistry.REGISTRY.getKey(spell).toString()))
                             .toList();
@@ -66,6 +70,31 @@ public final class ScrollForgeRecipeMaker {
                 });
 
         return recipes;
+    }
+
+    private static List<io.redspace.ironsspellbooks.item.InkItem> resolveInkItems(JeiPlugin.ItemFinder itemFinder) {
+        var inks = new ArrayList<io.redspace.ironsspellbooks.item.InkItem>();
+        inks.addAll(itemFinder.inkItems);
+        addInkIfMissing(inks, ItemRegistry.INK_COMMON.get());
+        addInkIfMissing(inks, ItemRegistry.INK_UNCOMMON.get());
+        addInkIfMissing(inks, ItemRegistry.INK_RARE.get());
+        addInkIfMissing(inks, ItemRegistry.INK_EPIC.get());
+        addInkIfMissing(inks, ItemRegistry.INK_LEGENDARY.get());
+        return inks;
+    }
+
+    private static void addInkIfMissing(List<io.redspace.ironsspellbooks.item.InkItem> inks, Item ink) {
+        if (ink instanceof io.redspace.ironsspellbooks.item.InkItem inkItem && !inks.contains(inkItem)) {
+            inks.add(inkItem);
+        }
+    }
+
+    private static Ingredient resolveFocusIngredient(net.minecraft.tags.TagKey<Item> focusTag) {
+        var focusInput = Ingredient.of(focusTag);
+        if (!focusInput.isEmpty()) {
+            return focusInput;
+        }
+        return Ingredient.of(ModTags.SCHOOL_FOCUS);
     }
 
     private static ItemStack getScrollStack(AbstractSpell spell, int spellLevel) {

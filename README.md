@@ -4,8 +4,10 @@ This is an unofficial port of the mod Iron's Spells and Spellbooks for Fabric 1.
 
 <h2>!!THE ASSETS AND IDENTITY OF THIS PROJECT BELONG TO IRON, THE CREATOR OF THE MAIN MOD!!</h2>
 
-<h2>YOU ARE NOT ALLOWED TO BUILD AND PUBLISH OR DISTRIBUTE THIS MOD ANYWHERE</h2>
-<h2>YOU ARE NOT ALLOWED TO USE THE ASSETS FOUND IN THIS REPOSITORY</h2>
+<h2>Requires GeckoLib, PlayerAnimator and Accessories + it's dependencies</h2>
+
+<h3>YOU ARE NOT ALLOWED TO BUILD AND PUBLISH OR DISTRIBUTE THIS MOD ANYWHERE</h3>
+<h3>YOU ARE NOT ALLOWED TO USE THE ASSETS FOUND IN THIS REPOSITORY</h3>
 <h3>YOU ARE ALLOWED TO:</h3>
  - Fork and modify this mod
  - Create your own addons 
